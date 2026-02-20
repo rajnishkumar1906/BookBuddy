@@ -1,10 +1,3 @@
-Got it 👍
-Below is a **clean, copy-paste ready `README.md`** written at a **top-level / portfolio standard** (not AIM-easy).
-You can directly put this into GitHub and reference it in your resume.
-
----
-
-```md
 # 📚 BookBuddy — Local AI Librarian (RAG-Based System)
 
 BookBuddy is a **local, explainable AI-powered virtual librarian** that can search, recommend, and explain books using **Retrieval-Augmented Generation (RAG)**.  
@@ -246,27 +239,3 @@ ollama run llama3
 ---
 
 ## 📜 License
-
-MIT License — free to use, modify, and learn from.
-
----
-
-## 👤 Author
-
-**[Your Name]**
-AI / Backend Engineer
-
-Built as a practical, end-to-end AI system for learning, experimentation, and professional portfolio use.
-
-```
-
----
-
-If you want next, I can:
-- convert this into **resume bullet points**
-- tailor it for **AI engineer / backend roles**
-- add **architecture diagrams**
-- or write a **GitHub project description + tags**
-
-Just tell me 👍
-```
