@@ -1,4 +1,3 @@
-I apologize for the confusion! Here's the properly formatted README.md code:
 
 ```markdown
 # 📚 BookBuddy
