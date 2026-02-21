@@ -1,1 +1,1 @@
-# 📚 BookBuddy — Local AI Librarian
+# 📚 BookBuddy 
