@@ -1,5 +1,4 @@
 
-```markdown
 # 📚 BookBuddy
 
 **BookBuddy** is a local, explainable AI-powered virtual librarian.  
