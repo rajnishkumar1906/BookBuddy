@@ -1,254 +1,247 @@
-📚 BookBuddy — Local AI Librarian (RAG-Based System)
+Ahhh, got it 👍 — you’re right.
+What you pasted is **plain text**, so GitHub isn’t rendering it as Markdown. The issue is mainly:
 
-BookBuddy is a local, explainable AI-powered virtual librarian built using Retrieval-Augmented Generation (RAG).
-It can search, recommend, summarize, and explain books using semantic understanding rather than keyword matching — all while remaining fully local and privacy-first.
+* Missing `#` for headings
+* Lists not using `-` or `*` consistently
+* Sections not separated cleanly
+* Some emoji headings missing Markdown syntax
 
-This project is designed as a portfolio-grade system, showcasing real-world practices across backend engineering, machine learning, and web development.
+Below is a **README.md that will render correctly on GitHub**. You can **copy–paste this directly** and it will look right.
 
-🎯 Project Overview
+---
+
+```md
+# 📚 BookBuddy — Local AI Librarian (RAG-Based System)
+
+BookBuddy is a **local, explainable AI-powered virtual librarian** built using **Retrieval-Augmented Generation (RAG)**.  
+It can search, recommend, summarize, and explain books using **semantic understanding** rather than keyword matching — all while remaining **fully local and privacy-first**.
+
+This project is designed as a **portfolio-grade system**, showcasing real-world practices across **backend engineering, machine learning, and web development**.
+
+---
+
+## 🎯 Project Overview
 
 The goal of BookBuddy is to simulate the experience of interacting with a knowledgeable librarian who can:
 
-Understand natural language book queries
+- Understand natural language book queries  
+- Recommend books based on meaning, not keywords  
+- Explain *why* a book is recommended  
+- Generate librarian-style summaries  
+- Learn basic user preferences over time  
+- Run entirely without paid APIs or cloud-hosted LLMs  
 
-Recommend books based on meaning, not keywords
+---
 
-Explain why a book is recommended
+## ✅ Key Features
 
-Generate librarian-style summaries
+### 🔍 Semantic Book Search
+- Vector-based search across titles, authors, genres, descriptions, and OCR text  
+- Dense embeddings instead of traditional keyword matching  
 
-Learn basic user preferences over time
+### 🧠 Retrieval-Augmented Generation (RAG)
+- Relevant books are retrieved from a vector database  
+- A local LLM reasons over retrieved context  
 
-Run entirely without paid APIs or cloud-hosted LLMs
+### 📖 Explanations & Summaries
+- Clear justification for recommendations  
+- Librarian-style summaries (minimum 50 words)  
+- Responses grounded in retrieved data  
 
-✅ Key Features
-🔍 Semantic Book Search
+### 🖼️ OCR-Based Text Understanding
+- Extracts visible text from book covers using OCR  
+- OCR text is embedded and indexed alongside metadata  
+- Enables reasoning over image-derived text (no vision models)  
 
-Vector-based search across titles, authors, genres, descriptions, and OCR text
+### 👤 User Preference Learning
+- Tracks basic user interactions  
+- Improves recommendations over time  
 
-Uses dense embeddings instead of traditional keyword matching
+### 🔐 Authentication & Security
+- JWT-based authentication  
+- OAuth 2.0 (Google login)  
+- Stateless and secure backend design  
 
-🧠 Retrieval-Augmented Generation (RAG)
+### 🏠 Fully Local Execution
+- No paid APIs  
+- No cloud-hosted LLMs  
+- Local embeddings, retrieval, and inference  
 
-Relevant books are retrieved from a vector database
+---
 
-A local LLM reasons over retrieved context to generate responses
+## 🧰 Technology Stack
 
-📖 Explanations & Summaries
+### Backend
+- **FastAPI** — high-performance REST APIs  
+- **PostgreSQL (Supabase)** — structured data storage  
+- **JWT Authentication** — secure access  
+- **OAuth 2.0** — Google sign-in  
 
-Clear justifications for recommendations
+### AI / ML
+- **ChromaDB** — vector database  
+- **SentenceTransformers (MPNet)** — semantic embeddings  
+- **Google Gemini** — LLM inference (API-key based)  
+- **Tesseract OCR** — image text extraction  
 
-Librarian-style summaries (minimum 50 words)
+### Frontend
+- **React**  
+- **Tailwind CSS**  
+- **React Router**  
+- **JWT-based auth flow**  
+- **Protected routes & dashboards**  
 
-Transparent reasoning grounded in retrieved data
+---
 
-🖼️ OCR-Based Text Understanding
+## 🏗️ System Architecture
 
-Extracts visible text from book covers using OCR
+```
 
-OCR text is embedded and indexed alongside structured metadata
-
-Enables reasoning over image-derived text without raw vision models
-
-👤 User Preference Learning
-
-Tracks basic user interactions
-
-Gradually improves recommendations over time
-
-🔐 Authentication & Security
-
-JWT-based authentication
-
-OAuth 2.0 (Google sign-in)
-
-Stateless, secure backend architecture
-
-🏠 Fully Local Execution
-
-No paid APIs
-
-No cloud-hosted LLM dependency
-
-Embeddings, inference, and retrieval run locally
-
-🧰 Technology Stack
-Backend
-
-FastAPI — high-performance REST API framework
-
-PostgreSQL (Supabase) — structured data storage
-
-JWT Authentication — secure API access
-
-OAuth 2.0 — Google login support
-
-AI / ML
-
-ChromaDB — vector database for semantic retrieval
-
-SentenceTransformers (MPNet) — dense text embeddings
-
-Google Gemini — LLM inference (local orchestration via API key)
-
-Tesseract OCR — text extraction from book cover images
-
-Frontend
-
-React
-
-Tailwind CSS
-
-React Router
-
-JWT-based authentication flow
-
-Protected routes and dashboards
-
-🏗️ System Architecture
 User Query
 ↓
 FastAPI API
 ↓
-Embedding Model (SentenceTransformers)
+SentenceTransformers (Embeddings)
 ↓
 Chroma Vector Store
 ↓
 Relevant Book IDs
 ↓
-Supabase (PostgreSQL)
+PostgreSQL (Supabase)
 ↓
 Book Metadata + OCR Text
 ↓
 LLM (Gemini)
 ↓
 Final Answer / Explanation
-📂 Project Structure
+
+```
+
+---
+
+## 📂 Project Structure
+
+```
+
 backend/
-│
 ├── main.py                  # FastAPI entry point
-├── core/                    # Configuration, database, security
-│
+├── core/                    # Config, database, security
 ├── auth/                    # JWT & OAuth logic
 ├── users/                   # User profiles & preferences
-├── books/                   # Book search & detail APIs
-├── assistant/               # RAG + LLM orchestration
-│
-├── retrieval/               # Chroma-based semantic search
-├── data_preprocessing/      # CSV cleaning & embedding pipeline
-├── chroma_store/            # Persisted local embeddings
-│
+├── books/                   # Book APIs
+├── assistant/               # RAG + LLM logic
+├── retrieval/               # Chroma semantic search
+├── data_preprocessing/      # CSV cleaning & embeddings
+├── chroma_store/            # Local persisted vectors
+
 frontend/
 ├── src/
 │   ├── pages/
 │   ├── components/
 │   ├── auth/
 │   └── services/
-🔐 Authentication & Authorization
 
-JWT-based authentication
+````
 
-Access tokens
+---
 
-Protected API routes
+## 🔐 Authentication & Authorization
 
-OAuth 2.0 integration
+- JWT-based authentication  
+- Protected API routes  
+- OAuth 2.0 Google login  
+- Secure password hashing  
+- Stateless backend design  
 
-Google login support
+---
 
-Secure password hashing
+## 📊 Data Storage Strategy
 
-Stateless authentication design
-
-📊 Data Storage Strategy
-PostgreSQL (Supabase)
-
+### PostgreSQL (Supabase)
 Stores:
+- Book metadata  
+- Image URLs  
+- User accounts  
+- Interaction history  
+- Preference signals  
 
-Book metadata
-
-Image URLs
-
-User accounts
-
-Interaction history
-
-Preference signals
-
-ChromaDB
-
+### ChromaDB
 Stores:
+- Text embeddings  
+- OCR-derived embeddings  
+- Retrieval metadata  
 
-Text embeddings
+---
 
-OCR-derived embeddings
+## 🖼️ OCR & Image Handling
 
-Metadata for semantic retrieval
+- Book covers referenced via image URLs  
+- OCR performed using **Tesseract**  
+- Extracted text embedded and indexed  
+- Enables text-based reasoning from images  
 
-🖼️ OCR & Image Processing
+---
 
-Book covers referenced via image URLs
+## ❌ Intentionally Out of Scope
 
-OCR performed using Tesseract
+This version does **not** include:
 
-Extracted text embedded and indexed
+- Direct image understanding by the LLM  
+- Advanced computer vision pipelines  
+- Agent graphs or multi-step planners  
+- Cloud-based or paid LLM services  
 
-Enables text-based reasoning from images (no direct vision models)
+This keeps the system:
+- Explainable  
+- Local  
+- Debuggable  
+- Maintainable  
 
-❌ Intentionally Out of Scope
+---
 
-This version deliberately excludes:
+## 🎯 Success Criteria
 
-Direct image understanding by the LLM
+BookBuddy is successful when:
 
-Advanced computer vision pipelines
+- Summaries feel librarian-like  
+- Recommendations are semantically relevant  
+- Explanations clearly justify results  
+- User interaction improves recommendations  
+- Everything runs locally and reproducibly  
 
-Agent graphs or multi-step planners
+---
 
-Cloud-based or paid LLM services
+## 🧪 Engineering Philosophy
 
-This ensures the system remains:
+- ML-first, API-second  
+- Deterministic preprocessing  
+- Clear separation of concerns  
+- No hidden cloud dependencies  
+- Debuggability over hype  
 
-Explainable
+---
 
-Local
+## 🛠️ Setup
 
-Debuggable
-
-Maintainable
-
-🎯 Success Criteria
-
-BookBuddy is considered successful when:
-
-Summaries feel librarian-like
-
-Recommendations are semantically relevant
-
-Explanations clearly justify recommendations
-
-The system improves via user interaction data
-
-Everything runs locally and reproducibly
-
-🧪 Engineering Philosophy
-
-ML-first, API-second
-
-Deterministic preprocessing pipelines
-
-Clear separation of concerns
-
-No hidden cloud dependencies
-
-Debuggability over hype
-
-🛠️ High-Level Setup
-# Install dependencies
+```bash
 pip install -r requirements.txt
-
-# Run backend
 uvicorn backend.main:app --reload
+````
 
-# Set Gemini API key in .env
-# GEMINI_API_KEY=your_key
+Create a `.env` file:
+
+```env
+GEMINI_API_KEY=your_key
+```
+
+```
+
+---
+
+If you want, I can:
+- Make a **shorter “GitHub-landing” README**
+- Add **badges + demo screenshots**
+- Write a **resume-friendly project description**
+- Or tailor it for **ML engineer vs backend roles**
+
+Just say the word 👌
+```
