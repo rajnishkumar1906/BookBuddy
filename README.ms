@@ -1,5 +1,3 @@
-
-```md
 # 📚 BookBuddy — Local AI Librarian
 
 **BookBuddy** is a **local, explainable AI-powered virtual librarian** built using **Retrieval-Augmented Generation (RAG)**.  
@@ -223,12 +221,3 @@ npm run dev
 * [ ] Offline LLM inference
 * [ ] Book similarity graph
 
----
-
-## 👤 Author
-
-**Rajnish Kumar**
-GitHub: [@rajnishkumar1906](https://github.com/rajnishkumar1906)
-=======
-# 📚 BookBuddy 
->>>>>>> 482140a274aad4448fd6cd8886f522394d59f5a8
