@@ -1,86 +1,62 @@
-📚 BookBuddy — Local AI Librarian (RAG-Based System)
+Got it 👍 — no meta text, no explanations, **just the README content itself**.
 
-BookBuddy is a **local, explainable AI-powered virtual librarian** that can search, recommend, and explain books using **Retrieval-Augmented Generation (RAG)**.  
-The system combines **semantic search, OCR, vector databases, and local LLM reasoning** to deliver intelligent, librarian-like assistance while remaining **fully local and privacy-first**.
-
-This project is designed as a **portfolio-grade system**, demonstrating real-world backend, ML, and web engineering practices.
+Here is the **clean, copy-paste-ready `README.md`** for **BookBuddy**, in the **exact same format/style as Connectly**, and **GitHub-render correct**.
 
 ---
 
-## 🎯 Project Goal
+```md
+# 📚 BookBuddy — Local AI Librarian
 
-Build a **local virtual librarian** that can:
+**BookBuddy** is a **local, explainable AI-powered virtual librarian** built using **Retrieval-Augmented Generation (RAG)**.  
+It understands natural language queries, recommends books semantically, and explains *why* each recommendation makes sense — all while remaining **fully local and privacy-first**.
 
-- Understand natural language book queries
-- Recommend books semantically (not keyword-based)
-- Explain *why* a book is recommended
-- Summarize books in a librarian-like tone
-- Learn basic user preferences over time
-- Run without paid APIs or cloud-based LLMs
+This project demonstrates real-world **ML engineering, backend architecture, and full-stack integration**, making it ideal for a portfolio showcase.
 
 ---
 
-## ✅ What BookBuddy Does
+## 🚀 Features
 
-### Core Capabilities
+### 🔍 Semantic Book Search
+- Natural language book queries
+- Vector-based semantic search (no keyword matching)
+- Searches across titles, authors, genres, descriptions, and OCR text
 
-- 🔍 **Semantic Search**
-  - Vector-based search over book titles, authors, genres, and descriptions
-  - Uses dense embeddings instead of keyword matching
+### 🧠 Retrieval-Augmented Generation (RAG)
+- Relevant books retrieved from a vector database
+- Local LLM reasons over retrieved context
+- Responses grounded in retrieved data
 
-- 🧠 **Retrieval-Augmented Generation (RAG)**
-  - Relevant books are retrieved first
-  - A local LLM reasons over retrieved context
+### 📖 Book Recommendations & Summaries
+- Librarian-style explanations for recommendations
+- Clear reasoning for *why* a book fits the query
+- Book summaries (minimum 50 words)
+- Neutral, informative librarian tone
 
-- 📖 **Book Explanations & Summaries**
-  - Explains why a book is recommended
-  - Generates summaries of at least 50 words
-  - Responses are designed to feel librarian-like
+### 🖼️ OCR-Based Text Understanding
+- OCR extraction from book cover images using **Tesseract**
+- OCR text embedded and indexed
+- Enables text-based reasoning from images (no vision models)
 
-- 🖼️ **OCR-Based Text Understanding**
-  - Extracts text from book covers using OCR
-  - OCR text is embedded and indexed alongside metadata
+### 👤 User Preference Learning
+- Tracks basic user interactions
+- Learns genre and topic preferences over time
+- Improves recommendation relevance
 
-- 👤 **User Preference Learning**
-  - Tracks basic user interactions
-  - Improves recommendations over time
+### 🔐 Authentication & Security
+- JWT-based authentication
+- OAuth 2.0 (Google login)
+- Stateless and secure backend
+- Protected API routes
 
-- 🔐 **Authentication & Security**
-  - JWT-based authentication
-  - OAuth (Google) support
-  - Secure, stateless backend design
-
-- 🏠 **Fully Local Execution**
-  - No paid APIs
-  - No cloud LLM dependency
-  - All embeddings and inference run locally
-
----
-
-## 🧰 Technology Stack
-
-### Backend
-- **FastAPI** — high-performance REST APIs
-- **PostgreSQL (Supabase)** — structured data & user interactions
-- **JWT Authentication** — secure API access
-- **OAuth 2.0** — Google sign-in integration
-
-### AI / ML
-- **ChromaDB** — vector database for embeddings
-- **SentenceTransformers (MPNet)** — semantic embeddings
-- **Google Gemini** — LLM inference (via GEMINI_API_KEY)
-- **Tesseract OCR** — text extraction from images
-
-### Frontend
-- **React**
-- **Tailwind CSS**
-- **React Router**
-- **JWT-based auth flow**
-- **Protected routes & dashboards**
+### 🏠 Fully Local Execution
+- No paid APIs
+- No cloud-hosted LLMs
+- Local embeddings, retrieval, and inference
+- Privacy-first by design
 
 ---
 
-## 🏗️ System Architecture
+## ⚡ RAG System Architecture
 
 ```
 
@@ -88,17 +64,17 @@ User Query
 ↓
 FastAPI API
 ↓
-Embedding Model (SentenceTransformers)
+SentenceTransformers (Embeddings)
 ↓
 Chroma Vector Store
 ↓
 Relevant Book IDs
 ↓
-Supabase (PostgreSQL)
+PostgreSQL (Supabase)
 ↓
 Book Metadata + OCR Text
 ↓
-Gemini (LLM)
+LLM (Gemini)
 ↓
 Final Answer / Explanation
 
@@ -106,51 +82,69 @@ Final Answer / Explanation
 
 ---
 
-## 📂 Project Structure
+## 🛠️ Tech Stack
+
+### Backend
+- **FastAPI**
+- **PostgreSQL (Supabase)**
+- **JWT Authentication**
+- **OAuth 2.0**
+
+### AI / ML
+- **ChromaDB**
+- **SentenceTransformers (MPNet)**
+- **Google Gemini**
+- **Tesseract OCR**
+
+### Frontend
+- **React**
+- **Tailwind CSS**
+- **React Router**
+- **JWT-based auth flow**
+
+---
+
+## 📁 Project Structure
 
 ```
 
-backend/
-│
-├── main.py                  # FastAPI entry point
-├── core/                    # config, database, security
-│
-├── auth/                    # JWT & OAuth logic
-├── users/                   # user profiles & preferences
-├── books/                   # book search & detail APIs
-├── assistant/               # Gemini + RAG logic
-│
-├── retrieval/               # Chroma-based semantic search
-├── data_preprocessing/      # CSV cleaning & embedding pipeline
-├── chroma_store/            # persisted embeddings (local)
-│
-frontend/
-├── src/
-│   ├── pages/
-│   ├── components/
+BookBuddy/
+├── backend/
+│   ├── main.py
+│   ├── core/
 │   ├── auth/
-│   └── services/
+│   ├── users/
+│   ├── books/
+│   ├── assistant/
+│   ├── retrieval/
+│   ├── data_preprocessing/
+│   └── chroma_store/
+│
+├── frontend/
+│   └── src/
+│       ├── pages/
+│       ├── components/
+│       ├── auth/
+│       └── services/
+│
+└── README.md
 
 ````
 
 ---
 
 ## 🔐 Authentication & Authorization
-
-- **JWT-based authentication**
-  - Access tokens
-  - Protected API routes
-- **OAuth 2.0**
-  - Google login support
-- **Secure password hashing**
-- **Stateless backend auth design**
+- JWT-based authentication
+- Protected API routes
+- OAuth 2.0 Google login
+- Secure password hashing
+- Stateless backend design
 
 ---
 
 ## 📊 Data Storage Strategy
 
-### Supabase (PostgreSQL)
-Stores:
+### PostgreSQL (Supabase)
 - Book metadata
 - Image URLs
 - User accounts
@@ -158,84 +152,85 @@ Stores:
 - Preference signals
 
 ### ChromaDB
-Stores:
 - Text embeddings
 - OCR-derived embeddings
-- Metadata for semantic retrieval
+- Retrieval metadata
 
 ---
 
 ## 🖼️ OCR & Image Handling
-
-- Book covers are stored via image URLs
-- OCR extracts visible text using **Tesseract**
-- OCR text is embedded and indexed
-- Enables text-based reasoning from images (no raw vision yet)
+- Book covers stored via image URLs
+- OCR performed using **Tesseract**
+- Extracted text embedded and indexed
+- Enables text-based reasoning from images
 
 ---
 
-## ❌ Explicitly Out of Scope (By Design)
-
-This version intentionally does **not** include:
-
+## ❌ Out of Scope
 - Direct image understanding by the LLM
 - Advanced computer vision pipelines
 - Agent graphs or multi-step planners
 - Cloud-based or paid LLM services
 
-This keeps the system:
-- Explainable
-- Local
-- Debuggable
-- Maintainable
-
 ---
 
 ## 🎯 Success Criteria
-
-BookBuddy is considered successful when:
-
-- Book summaries feel **librarian-like**
-- Recommendations are **semantically relevant**
-- Explanations clearly justify recommendations
-- The system improves using user interaction data
-- Everything runs **locally and reproducibly**
+- Librarian-style summaries
+- Semantically relevant recommendations
+- Clear, explainable reasoning
+- Local and reproducible execution
 
 ---
 
 ## 🧪 Engineering Philosophy
-
 - ML-first, API-second
-- Deterministic preprocessing pipelines
+- Deterministic preprocessing
 - Clear separation of concerns
 - No hidden cloud dependencies
 - Debuggability over hype
 
 ---
 
-## 🛠️ High-Level Setup
+## 🚦 Getting Started
 
+### Prerequisites
+- Python 3.10+
+- PostgreSQL
+- Node.js
+
+### Backend
 ```bash
-# Install dependencies
 pip install -r requirements.txt
-
-# Run backend
 uvicorn backend.main:app --reload
-
-# Set Gemini API key (in .env)
-# GEMINI_API_KEY=your_key
 ````
 
+Create `.env`:
+
+```env
+GEMINI_API_KEY=your_key
+```
+
+### Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
 ---
 
-## 🔮 Future Enhancements
+## 🛣️ Roadmap
 
-* Multimodal embeddings (CLIP)
-* Better long-term preference modeling
-* Advanced recommendation explanations
-* Agent-style librarian behaviors
-* Improved frontend UX
+* [ ] Advanced preference modeling
+* [ ] Conversation memory
+* [ ] Hybrid retrieval (BM25 + vectors)
+* [ ] Offline LLM inference
+* [ ] Book similarity graph
 
 ---
 
-## 📜 License
+## 👤 Author
+
+**Rajnish Kumar**
+GitHub: [@rajnishkumar1906](https://github.com/rajnishkumar1906)
