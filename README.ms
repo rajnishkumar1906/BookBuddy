@@ -1,6 +1,6 @@
 # 📚 BookBuddy — Local AI Librarian
 
-**BookBuddy** is a **local, explainable AI-powered virtual librarian** built using **Retrieval-Augmented Generation (RAG)**.  
+**BookBuddy** is a local, explainable AI-powered virtual librarian built using Retrieval-Augmented Generation (RAG).  
 It understands natural language queries, recommends books semantically, and explains *why* each recommendation makes sense — all while remaining **fully local and privacy-first**.
 
 This project demonstrates real-world **ML engineering, backend architecture, and full-stack integration**, making it ideal for a portfolio showcase.
