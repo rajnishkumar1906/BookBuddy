@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Got it 👍 — no meta text, no explanations, **just the README content itself**.
 
 Here is the **clean, copy-paste-ready `README.md`** for **BookBuddy**, in the **exact same format/style as Connectly**, and **GitHub-render correct**.
@@ -234,3 +235,6 @@ npm run dev
 
 **Rajnish Kumar**
 GitHub: [@rajnishkumar1906](https://github.com/rajnishkumar1906)
+=======
+# 📚 BookBuddy 
+>>>>>>> 482140a274aad4448fd6cd8886f522394d59f5a8
