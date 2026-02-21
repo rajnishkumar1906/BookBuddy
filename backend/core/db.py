@@ -1,4 +1,4 @@
-import psycopg
+import psycopg # type: ignore
 from core.config import settings
 
 def get_db():

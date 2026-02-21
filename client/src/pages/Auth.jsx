@@ -1,4 +1,5 @@
-import { useState } from 'react';
+// src/pages/Auth.jsx
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   FaEnvelope,
@@ -9,6 +10,7 @@ import {
   FaArrowRight
 } from 'react-icons/fa';
 import BookBuddyLogo from '../components/BookBuddyLogo';
+import { useApp } from '../context/AppContext';
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
@@ -19,23 +21,70 @@ export default function Auth() {
     password: '',
     confirmPassword: ''
   });
+  const [error, setError] = useState('');
 
   const navigate = useNavigate();
+  const { login, register, googleLogin, handleGoogleCallback, isAuthenticated } = useApp();
+
+  // Check for Google OAuth callback (tokens in URL) or existing auth
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('access_token')) {
+      handleGoogleCallback();
+      window.history.replaceState({}, '', window.location.pathname);
+      navigate('/dashboard', { replace: true });
+      return;
+    }
+    if (isAuthenticated()) {
+      navigate('/dashboard');
+    }
+  }, [handleGoogleCallback, isAuthenticated, navigate]);
 
   const handleChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
     });
+    setError('');
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    setTimeout(() => {
+    setError('');
+
+    try {
+      if (isLogin) {
+        const result = await login(formData.email, formData.password);
+        if (result.success) {
+          navigate('/dashboard');
+        } else {
+          setError(result.error);
+        }
+      } else {
+        // Validate passwords match
+        if (formData.password !== formData.confirmPassword) {
+          throw new Error('Passwords do not match');
+        }
+        
+        const result = await register(formData.email, formData.password);
+        if (result.success) {
+          setIsLogin(true);
+          setFormData({ ...formData, password: '', confirmPassword: '' });
+          alert('Registration successful! Please login.');
+        } else {
+          setError(result.error);
+        }
+      }
+    } catch (error) {
+      setError(error.message || 'Authentication failed');
+    } finally {
       setIsLoading(false);
-      navigate('/dashboard');
-    }, 1500);
+    }
+  };
+
+  const handleGoogleLogin = () => {
+    googleLogin();
   };
 
   const toggleMode = () => {
@@ -46,6 +95,7 @@ export default function Auth() {
       password: '',
       confirmPassword: ''
     });
+    setError('');
   };
 
   return (
@@ -73,6 +123,13 @@ export default function Auth() {
                 : 'Get started with your free account'}
             </p>
           </div>
+
+          {/* Error message */}
+          {error && (
+            <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-xl text-sm">
+              {error}
+            </div>
+          )}
 
           {/* Auth Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -223,7 +280,10 @@ export default function Auth() {
 
           {/* Social login */}
           <div className="grid grid-cols-2 gap-3">
-            <button className="flex items-center justify-center gap-2 py-3 border border-gray-300 rounded-xl bg-white/80 backdrop-blur-sm hover:bg-gray-100 transition-all">
+            <button 
+              onClick={handleGoogleLogin}
+              className="flex items-center justify-center gap-2 py-3 border border-gray-300 rounded-xl bg-white/80 backdrop-blur-sm hover:bg-gray-100 transition-all"
+            >
               <FaGoogle className="w-5 h-5 text-gray-600" />
               <span className="text-sm font-medium text-gray-700">Google</span>
             </button>

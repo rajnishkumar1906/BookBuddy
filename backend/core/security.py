@@ -1,8 +1,9 @@
 from datetime import datetime, timedelta
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from jose import jwt, JWTError
+from jose import jwt, JWTError # type: ignore
 from core.config import settings
+from core.db import get_db
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
@@ -36,7 +37,8 @@ def require_role(role: str):
     def checker(user=Depends(get_current_user), db=Depends(get_db)):
         with db.cursor() as cur:
             cur.execute("SELECT role FROM users WHERE email=%s", (user,))
-            if cur.fetchone()[0] != role:
+            row = cur.fetchone()
+            if not row or row[0] != role:
                 raise HTTPException(status_code=403)
         return user
     return checker

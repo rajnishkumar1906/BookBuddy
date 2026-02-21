@@ -4,236 +4,172 @@ import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import SearchBar from '../components/SearchBar';
 import BookCard from '../components/BookCard';
-
-// Enhanced dummy books with more details
-const dummyBooks = [
-  {
-    id: "1",
-    title: "Atomic Habits",
-    author: "James Clear",
-    reason: "Build better habits effortlessly",
-    category: "Self-Improvement",
-    rating: 4.8,
-    genres: "Self-Help, Productivity",
-    num_pages: 320,
-    image_url: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400",
-    description: "No matter your goals, Atomic Habits offers a proven framework for improving every day. James Clear, one of the world's leading experts on habit formation, reveals practical strategies that will teach you exactly how to form good habits, break bad ones, and master the tiny behaviors that lead to remarkable results.",
-    published_year: 2018,
-    publisher: "Avery",
-    isbn: "978-0735211292"
-  },
-  {
-    id: "2",
-    title: "The Psychology of Money",
-    author: "Morgan Housel",
-    reason: "Timeless lessons on wealth, greed, and happiness",
-    category: "Finance",
-    rating: 4.7,
-    genres: "Finance, Psychology",
-    num_pages: 256,
-    image_url: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=400",
-    description: "Timeless lessons on wealth, greed, and happiness doing well with money isn't necessarily about what you know. It's about how you behave. And behavior is hard to teach, even to really smart people.",
-    published_year: 2020,
-    publisher: "Harriman House",
-    isbn: "978-0857197689"
-  },
-  {
-    id: "3",
-    title: "Sapiens",
-    author: "Yuval Noah Harari",
-    reason: "A brief history of humankind",
-    category: "History",
-    rating: 4.9,
-    genres: "History, Anthropology",
-    num_pages: 464,
-    image_url: "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=400",
-    description: "A brief history of humankind. Sapiens integrates history and science to reconsider accepted narratives, connect past developments with contemporary concerns, and examine specific events within the context of larger ideas.",
-    published_year: 2015,
-    publisher: "Harper Perennial",
-    isbn: "978-0062316097"
-  },
-  {
-    id: "4",
-    title: "Thinking, Fast and Slow",
-    author: "Daniel Kahneman",
-    reason: "Understand decision making and cognitive biases",
-    category: "Psychology",
-    rating: 4.6,
-    genres: "Psychology, Economics",
-    num_pages: 512,
-    image_url: "https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=400",
-    description: "Daniel Kahneman, recipient of the Nobel Prize in Economic Sciences for his work on decision-making, takes us on a groundbreaking tour of the mind and explains the two systems that drive the way we think.",
-    published_year: 2013,
-    publisher: "Farrar, Straus and Giroux",
-    isbn: "978-0374533557"
-  },
-  {
-    id: "5",
-    title: "The Alchemist",
-    author: "Paulo Coelho",
-    reason: "Follow your dreams and listen to your heart",
-    category: "Fiction",
-    rating: 4.7,
-    genres: "Fiction, Philosophy",
-    num_pages: 208,
-    image_url: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400",
-    description: "A magical story about following your dreams. The Alchemist tells the story of Santiago, a young shepherd who embarks on a journey to find a treasure he has dreamed about.",
-    published_year: 1993,
-    publisher: "HarperOne",
-    isbn: "978-0062502174"
-  },
-  {
-    id: "6",
-    title: "Dune",
-    author: "Frank Herbert",
-    reason: "Epic sci-fi about politics, religion, and ecology",
-    category: "Science Fiction",
-    rating: 4.8,
-    genres: "Science Fiction, Fantasy",
-    num_pages: 688,
-    image_url: "https://images.unsplash.com/photo-1532012197267-da84d127e765?w=400",
-    description: "Set on the desert planet Arrakis, Dune is the story of the boy Paul Atreides, who would become the mysterious Muad'Dib and lead a great army to a cosmic confrontation.",
-    published_year: 1965,
-    publisher: "Ace Books",
-    isbn: "978-0441172719"
-  }
-];
-
-// Function to match query with books (semantic matching simulation)
-const matchBooksToQuery = (query) => {
-  const queryLower = query.toLowerCase();
-  
-  // Simple keyword matching - in real app this would be backend API call
-  return dummyBooks.filter(book => {
-    const searchableText = `${book.title} ${book.author} ${book.category} ${book.genres} ${book.reason}`.toLowerCase();
-    
-    // Check for keyword matches
-    if (searchableText.includes(queryLower)) return true;
-    
-    // Check for category matches
-    if (book.category.toLowerCase().includes(queryLower)) return true;
-    
-    // Check for genre matches
-    if (book.genres.toLowerCase().includes(queryLower)) return true;
-    
-    // Check for author matches
-    if (book.author.toLowerCase().includes(queryLower)) return true;
-    
-    // Check for title matches
-    if (book.title.toLowerCase().includes(queryLower)) return true;
-    
-    return false;
-  });
-};
+import { useApp } from '../context/AppContext';
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const [results, setResults] = useState([]);
-  const [isSearching, setIsSearching] = useState(false);
-  const [lastQuery, setLastQuery] = useState('');
+  const { searchBooks, searchResults, isSearching, lastQuery } = useApp();
+  const [searchError, setSearchError] = useState('');
 
-  const handleSearch = (query) => {
-    setLastQuery(query);
-    setIsSearching(true);
+  const handleSearch = async (query) => {
+    const trimmedQuery = query.trim();
+    if (!trimmedQuery) return;
+
+    setSearchError('');
+    const result = await searchBooks(trimmedQuery, 12);
+    console.log("[Dashboard] Results updated:", results.length, " | Query:", lastQuery);
     
-    // Simulate API call delay
-    setTimeout(() => {
-      const matchedBooks = matchBooksToQuery(query);
-      setResults(matchedBooks);
-      setIsSearching(false);
-    }, 800);
+    if (!result.success) {
+      setSearchError(result.error || 'Something went wrong. Please try again.');
+    }
   };
 
   const handleBookClick = (book) => {
-    // Navigate to book detail page with the book data
-    navigate(`/book/${book.id}`, { state: { book } });
+    if (book?.id) {
+      navigate(`/book/${book.id}`, { state: { book } });
+    }
   };
 
+  const results = searchResults;
+  const aiAnswer = results.length > 0 ? results[0]?.answer : null;
+  const hasSearched = !!lastQuery;
+
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen flex flex-col ">
       <Navbar />
 
-      <main className="max-w-6xl mx-auto px-4 py-12">
+      <main className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Hero Section */}
-        <div className="text-center mb-16">
-          <h1 className="text-5xl md:text-7xl font-bold mb-6">
-            <span className="text-gray-900">Find Your Next</span>
+        <div className="text-center mb-16 md:mb-20">
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold mb-6 tracking-tight">
+            <span className="text-gray-900">Find Your</span>
             <br />
-            <span className="bg-gradient-to-r from-amber-800 to-amber-900 bg-clip-text text-transparent">
-              Great Read
+            <span className="bg-gradient-to-r from-amber-700 via-amber-800 to-amber-900 bg-clip-text text-transparent">
+              Next Great Read
             </span>
           </h1>
-          <div className="bg-white/95 backdrop-blur-sm shadow-xl max-w-3xl mx-auto px-8 py-4 rounded-2xl border border-gray-200">
-            <p className="text-xl text-gray-700 leading-relaxed">
-              Describe what you're in the mood for — get personalized suggestions
-              powered by AI that understands your reading preferences.
+          <div className="max-w-3xl mx-auto bg-white/80 backdrop-blur-md shadow-xl px-8 py-6 rounded-3xl border border-amber-100">
+            <p className="text-lg md:text-xl text-gray-700 leading-relaxed">
+              Tell me what mood you're in or what kind of story you're craving — get AI-powered book recommendations tailored just for you.
             </p>
           </div>
         </div>
 
-        {/* Search Section */}
-        <div className="max-w-4xl mx-auto mb-20">
-          <div className="bg-white/95 backdrop-blur-sm shadow-2xl rounded-3xl p-8 border border-gray-200">
+        {/* Search Bar */}
+        <div className="max-w-4xl mx-auto mb-16">
+          <div className="bg-white/90 backdrop-blur-lg shadow-2xl rounded-3xl p-8 border border-amber-100">
             <SearchBar onSearch={handleSearch} />
           </div>
         </div>
 
-        {/* Results Section */}
-        {results.length > 0 && (
-          <section>
-            <div className="flex items-center justify-between mb-10">
+        {/* Error Message */}
+        {searchError && (
+          <div className="max-w-4xl mx-auto mb-8 p-5 bg-red-50 border border-red-200 text-red-700 rounded-2xl shadow-sm text-center md:text-left">
+            {searchError}
+          </div>
+        )}
+
+        {/* Main Content Area */}
+        {isSearching ? (
+          <div className="flex flex-col items-center justify-center py-24 text-gray-600">
+            <div className="relative mb-6">
+              <div className="w-20 h-20 border-4 border-amber-200 border-t-amber-800 rounded-full animate-spin"></div>
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-10 h-10 bg-amber-100 rounded-full opacity-40 animate-pulse"></div>
+              </div>
+            </div>
+            <p className="text-xl font-medium text-amber-900">Looking for the perfect books...</p>
+            <p className="mt-3 text-gray-500">This usually takes just a few seconds</p>
+          </div>
+        ) : results.length > 0 ? (
+          <section className="mt-8">
+            {/* Results Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-10 gap-4">
               <div>
-                <h2 className="text-3xl font-semibold text-gray-800 bg-white/95 backdrop-blur-sm shadow-lg px-6 py-3 rounded-2xl border border-gray-200">
-                  Recommended for You
+                <h2 className="text-3xl md:text-4xl font-bold text-gray-800">
+                  Books Picked for You
                 </h2>
                 {lastQuery && (
-                  <p className="text-sm text-gray-500 mt-2 ml-2">
-                    Based on: "{lastQuery}"
+                  <p className="mt-3 text-gray-600 text-lg">
+                    Based on: <span className="font-medium italic text-amber-800">"{lastQuery}"</span>
                   </p>
                 )}
               </div>
-              <span className="px-4 py-2 bg-white/95 backdrop-blur-sm shadow-md rounded-full text-sm text-gray-600 border border-gray-200">
-                {results.length} books found
-              </span>
+              <div className="inline-flex px-6 py-3 bg-amber-50 text-amber-800 rounded-full text-base font-medium border border-amber-200 shadow-sm">
+                {results.length} {results.length === 1 ? 'book' : 'books'}
+              </div>
             </div>
 
-            {isSearching ? (
-              <div className="flex justify-center items-center py-20">
-                <div className="bg-white/95 backdrop-blur-sm shadow-xl p-8 rounded-3xl border border-gray-200">
-                  <div className="w-16 h-16 border-4 border-amber-200 border-t-amber-800 rounded-full animate-spin"></div>
+            {/* AI Answer */}
+            {aiAnswer && (
+              <div className="mb-12 p-7 bg-gradient-to-br from-amber-50 to-amber-100 rounded-2xl border border-amber-200 shadow-md">
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="text-2xl">📚</span>
+                  <h3 className="text-lg font-semibold text-amber-900">Your AI Librarian recommends:</h3>
                 </div>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {results.map((book, i) => (
-                  <div key={book.id} onClick={() => handleBookClick(book)} className="cursor-pointer transform transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
-                    <BookCard {...book} index={i} />
-                  </div>
-                ))}
+                <p className="text-gray-800 leading-relaxed whitespace-pre-line">
+                  {aiAnswer}
+                </p>
               </div>
             )}
-          </section>
-        )}
 
-        {/* Quick Categories */}
-        {results.length === 0 && !isSearching && (
-          <div className="mt-20 text-center">
-            <h3 className="text-xl text-gray-700 mb-8 bg-white/95 backdrop-blur-sm shadow-lg px-6 py-3 rounded-2xl inline-block border border-gray-200">
-              Popular Categories
+            {/* Book Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
+              {results.map((book, index) => (
+                <div
+                  key={book.id || `book-${index}`}
+                  onClick={() => handleBookClick(book)}
+                  className="cursor-pointer transition-all duration-300 hover:-translate-y-3 hover:shadow-2xl focus:outline-none focus:ring-2 focus:ring-amber-500 rounded-2xl overflow-hidden"
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`View details for ${book.title || 'book'}`}
+                >
+                  <BookCard {...book} index={index} />
+                </div>
+              ))}
+            </div>
+          </section>
+        ) : hasSearched ? (
+          <div className="mt-16 text-center py-20 bg-white/70 backdrop-blur-md rounded-3xl border border-amber-100 shadow-xl max-w-3xl mx-auto">
+            <h3 className="text-3xl font-bold text-gray-800 mb-6">
+              No matches found
             </h3>
+            <p className="text-lg text-gray-700 mb-10 px-6">
+              We couldn't find books matching <span className="font-semibold">"{lastQuery}"</span>.<br />
+              Try describing it differently or pick a popular category below.
+            </p>
             <div className="flex flex-wrap justify-center gap-4">
-              {['Fiction', 'Science Fiction', 'Self-Help', 'Biography', 'History', 'Fantasy', 'Mystery', 'Romance'].map((cat, i) => (
+              {['Fantasy', 'Romance', 'Mystery', 'Science Fiction', 'Thriller', 'Non-Fiction', 'Historical', 'Young Adult'].map((cat) => (
                 <button
-                  key={i}
+                  key={cat}
                   onClick={() => handleSearch(cat)}
-                  className="px-6 py-3 bg-white/95 backdrop-blur-sm shadow-md hover:shadow-xl rounded-full text-gray-700 hover:text-amber-800 hover:border-amber-800 hover:-translate-y-1 transition-all border border-gray-200"
+                  className="px-7 py-3.5 bg-white shadow-md hover:shadow-lg hover:border-amber-400 hover:text-amber-900 rounded-full text-gray-700 transition-all border border-amber-200 focus:outline-none focus:ring-2 focus:ring-amber-400"
+                  aria-label={`Search for ${cat} books`}
                 >
                   {cat}
                 </button>
               ))}
             </div>
-            <p className="mt-6 text-gray-500 text-sm">
-              Click any category to see recommendations
+          </div>
+        ) : (
+          <div className="mt-16 text-center">
+            <h3 className="text-2xl md:text-3xl font-bold text-gray-800 mb-10 bg-white/80 backdrop-blur-md shadow-lg px-10 py-5 rounded-3xl inline-block border border-amber-100">
+              Start Exploring
+            </h3>
+            <div className="flex flex-wrap justify-center gap-4 max-w-5xl mx-auto">
+              {['Fantasy', 'Romance', 'Mystery & Thriller', 'Science Fiction', 'Self-Help', 'Historical Fiction', 'Young Adult', 'Non-Fiction'].map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => handleSearch(cat)}
+                  className="px-8 py-4 bg-white/90 backdrop-blur-sm shadow-lg hover:shadow-2xl hover:border-amber-400 hover:text-amber-900 rounded-full text-gray-700 font-medium transition-all duration-300 border border-amber-200 focus:outline-none focus:ring-2 focus:ring-amber-400"
+                  aria-label={`Explore ${cat} books`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+            <p className="mt-10 text-gray-600 text-base">
+              Or just describe the kind of story you're in the mood for above ↑
             </p>
           </div>
         )}

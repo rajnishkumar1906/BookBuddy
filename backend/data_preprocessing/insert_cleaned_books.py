@@ -1,6 +1,6 @@
 import csv
 import os
-import psycopg
+import psycopg # type: ignore
 from dotenv import load_dotenv
 
 load_dotenv()

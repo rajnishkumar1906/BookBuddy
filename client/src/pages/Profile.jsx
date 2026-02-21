@@ -1,20 +1,26 @@
-import { useState } from 'react';
-import { FaUser, FaEnvelope, FaBook, FaHistory, FaHeart, FaCog, FaSignOutAlt, FaCamera } from 'react-icons/fa';
+// src/pages/Profile.jsx
+import { useState, useEffect } from 'react';
+import { 
+  FaUser, FaEnvelope, FaBook, FaHistory, FaHeart, 
+  FaCog, FaSignOutAlt, FaCamera, FaStar, FaSpinner 
+} from 'react-icons/fa';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import BookBuddyLogo from '../components/BookBuddyLogo';
+import { useApp } from '../context/AppContext';
 
 export default function Profile() {
+  const { user, logout } = useApp();
   const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState({
-    name: 'John Doe',
-    email: 'john.doe@example.com',
-    bio: 'Avid reader and book enthusiast. Love exploring different genres and discovering hidden gems.',
-    location: 'New York, USA',
-    favoriteGenres: ['Fiction', 'Science Fiction', 'Self-Help'],
+    name: '',
+    email: '',
+    bio: '',
+    location: '',
+    favoriteGenres: [],
     readingGoal: 50,
     booksRead: 24,
-    joinDate: 'January 2025'
+    joinDate: ''
   });
 
   const [stats] = useState({
@@ -38,6 +44,42 @@ export default function Profile() {
     { id: 4, book: 'Dune', author: 'Frank Herbert', progress: 30, rating: null }
   ]);
 
+  // Load user data
+  useEffect(() => {
+    if (user) {
+      setProfile({
+        name: user.email?.split('@')[0] || 'John Doe',
+        email: user.email || 'john.doe@example.com',
+        bio: 'Avid reader and book enthusiast. Love exploring different genres and discovering hidden gems.',
+        location: 'New York, USA',
+        favoriteGenres: ['Fiction', 'Science Fiction', 'Self-Help'],
+        readingGoal: 50,
+        booksRead: 24,
+        joinDate: 'January 2025'
+      });
+      setLoading(false);
+    }
+  }, [user]);
+
+  const handleSave = () => {
+    // TODO: Implement profile update API
+    setIsEditing(false);
+  };
+
+  const handleLogout = () => {
+    logout();
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="bg-white/95 backdrop-blur-sm shadow-xl p-8 rounded-3xl border border-gray-200">
+          <FaSpinner className="w-12 h-12 text-amber-800 animate-spin" />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen">
       <Navbar />
@@ -60,25 +102,62 @@ export default function Profile() {
             <div className="flex-1">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
                 <div>
-                  <h1 className="text-3xl font-bold text-gray-900 mb-1">{profile.name}</h1>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      value={profile.name}
+                      onChange={(e) => setProfile({ ...profile, name: e.target.value })}
+                      className="text-3xl font-bold text-gray-900 mb-1 border-b-2 border-amber-800 focus:outline-none"
+                    />
+                  ) : (
+                    <h1 className="text-3xl font-bold text-gray-900 mb-1">{profile.name}</h1>
+                  )}
                   <p className="text-gray-600 flex items-center gap-2">
                     <FaEnvelope className="w-4 h-4" />
                     {profile.email}
                   </p>
                 </div>
-                <button
-                  onClick={() => setIsEditing(!isEditing)}
-                  className="px-6 py-2 bg-gradient-to-r from-amber-800 to-amber-900 text-white font-medium rounded-xl hover:shadow-lg transition-all flex items-center gap-2 self-start"
-                >
-                  <FaCog className="w-4 h-4" />
-                  {isEditing ? 'Save Changes' : 'Edit Profile'}
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => isEditing ? handleSave() : setIsEditing(true)}
+                    className="px-6 py-2 bg-gradient-to-r from-amber-800 to-amber-900 text-white font-medium rounded-xl hover:shadow-lg transition-all flex items-center gap-2 self-start"
+                  >
+                    <FaCog className="w-4 h-4" />
+                    {isEditing ? 'Save Changes' : 'Edit Profile'}
+                  </button>
+                  <button
+                    onClick={handleLogout}
+                    className="px-4 py-2 border border-red-200 text-red-600 font-medium rounded-xl hover:bg-red-50 transition-all flex items-center gap-2"
+                  >
+                    <FaSignOutAlt className="w-4 h-4" />
+                    <span className="hidden sm:inline">Logout</span>
+                  </button>
+                </div>
               </div>
 
-              <p className="text-gray-700 mb-4">{profile.bio}</p>
+              {isEditing ? (
+                <textarea
+                  value={profile.bio}
+                  onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
+                  className="w-full p-3 border border-gray-300 rounded-xl mb-4 focus:outline-none focus:ring-2 focus:ring-amber-800"
+                  rows="3"
+                />
+              ) : (
+                <p className="text-gray-700 mb-4">{profile.bio}</p>
+              )}
 
               <div className="flex flex-wrap gap-4 text-sm">
-                <span className="text-gray-600">📍 {profile.location}</span>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={profile.location}
+                    onChange={(e) => setProfile({ ...profile, location: e.target.value })}
+                    className="px-3 py-1 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-800"
+                    placeholder="Location"
+                  />
+                ) : (
+                  <span className="text-gray-600">📍 {profile.location}</span>
+                )}
                 <span className="text-gray-600">📅 Joined {profile.joinDate}</span>
                 <span className="text-gray-600">📚 {profile.booksRead}/{profile.readingGoal} books this year</span>
               </div>

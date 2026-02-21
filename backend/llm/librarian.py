@@ -1,37 +1,22 @@
 from typing import List, Dict
-from llm.ollama_client import ask_ollama
+from llm.gemini_client import ask_gemini
 
 
 def build_books_context(books: List[Dict]) -> str:
-    lines = []
-    for i, b in enumerate(books, 1):
-        lines.append(
-            f"{i}. Title: {b['title']}\n"
-            f"   Author: {b['author']}\n"
-            f"   Genres: {b['genres']}\n"
-            f"   Pages: {b['num_pages']}\n"
-            f"   Description: {b['description'][:300]}...\n"
-        )
-    return "\n".join(lines)
+    return "\n".join(
+        f"{i}. {b['title']} | {b['author']} | {b.get('genres', '')} | {(b.get('description') or '')[:200]}"
+        for i, b in enumerate(books, 1)
+    )
 
 
 def librarian_answer(user_question: str, books: List[Dict]) -> str:
     context = build_books_context(books)
-
-    prompt = f"""
-You are a helpful librarian.
-
-Below are books retrieved based on the user's interest.
-Use ONLY this information to answer.
-If the answer is not possible from the books, say so honestly.
+    prompt = f"""Answer using only these books. If you can't, say so.
 
 BOOKS:
 {context}
 
-USER QUESTION:
-{user_question}
+Q: {user_question}
+A:"""
 
-ANSWER:
-"""
-
-    return ask_ollama(prompt)
+    return ask_gemini(prompt)

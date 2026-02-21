@@ -75,7 +75,7 @@ Build a **local virtual librarian** that can:
 ### AI / ML
 - **ChromaDB** — vector database for embeddings
 - **SentenceTransformers (MPNet)** — semantic embeddings
-- **Ollama** — local LLM inference
+- **Google Gemini** — LLM inference (via GEMINI_API_KEY)
 - **Tesseract OCR** — text extraction from images
 
 ### Frontend
@@ -105,7 +105,7 @@ Supabase (PostgreSQL)
 ↓
 Book Metadata + OCR Text
 ↓
-Ollama (Local LLM)
+Gemini (LLM)
 ↓
 Final Answer / Explanation
 
@@ -125,7 +125,7 @@ backend/
 ├── auth/                    # JWT & OAuth logic
 ├── users/                   # user profiles & preferences
 ├── books/                   # book search & detail APIs
-├── assistant/               # Ollama + RAG logic
+├── assistant/               # Gemini + RAG logic
 │
 ├── retrieval/               # Chroma-based semantic search
 ├── data_preprocessing/      # CSV cleaning & embedding pipeline
@@ -229,8 +229,8 @@ pip install -r requirements.txt
 # Run backend
 uvicorn backend.main:app --reload
 
-# Run local LLM
-ollama run llama3
+# Set Gemini API key (in .env)
+# GEMINI_API_KEY=your_key
 ````
 
 ---

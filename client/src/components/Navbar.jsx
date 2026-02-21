@@ -1,8 +1,12 @@
+// src/components/Navbar.jsx - UPDATED
 import { Link } from 'react-router-dom';
 import { FaSignOutAlt, FaUser, FaBell } from 'react-icons/fa';
 import BookBuddyLogo from './BookBuddyLogo';
+import { useApp } from '../context/AppContext';
 
 export default function Navbar() {
+  const { user, logout } = useApp();
+
   return (
     <nav className="bg-white/10 backdrop-blur-sm shadow-lg sticky top-0 z-50 px-6 py-4">
       <div className="max-w-7xl mx-auto flex justify-between items-center">
@@ -27,11 +31,14 @@ export default function Navbar() {
               <FaUser className="w-3 h-3 text-white" />
             </div>
             <span className="text-sm font-medium text-gray-800 hidden sm:block">
-              John Doe
+              {user?.email?.split('@')[0] || 'John Doe'}
             </span>
           </Link>
 
-          <button className="p-2.5 hover:bg-gray-100/80 rounded-xl transition-colors text-gray-600 hover:text-red-500">
+          <button 
+            onClick={logout}
+            className="p-2.5 hover:bg-gray-100/80 rounded-xl transition-colors text-gray-600 hover:text-red-500"
+          >
             <FaSignOutAlt className="w-4 h-4" />
           </button>
         </div>

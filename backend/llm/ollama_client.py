@@ -1,17 +1,4 @@
-import requests
+# Deprecated: LLM now uses Gemini. Use llm.gemini_client instead.
+from llm.gemini_client import ask_gemini
 
-OLLAMA_URL = "http://localhost:11434/api/generate"
-MODEL_NAME = "llama3"
-
-def ask_ollama(prompt: str) -> str:
-    response = requests.post(
-        OLLAMA_URL,
-        json={
-            "model": MODEL_NAME,
-            "prompt": prompt,
-            "stream": False,
-        },
-        timeout=120,
-    )
-    response.raise_for_status()
-    return response.json()["response"]
+__all__ = ["ask_gemini"]

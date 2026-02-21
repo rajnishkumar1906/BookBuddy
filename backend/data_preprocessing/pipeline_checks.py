@@ -1,5 +1,5 @@
 import os
-import psycopg
+import psycopg # type: ignore
 import chromadb
 from dotenv import load_dotenv
 from chromadb.config import Settings

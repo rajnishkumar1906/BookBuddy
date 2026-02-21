@@ -1,60 +1,90 @@
+// src/pages/BookDetail.jsx
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { useState } from 'react';
-import { FaArrowLeft, FaBook, FaUser, FaLayerGroup, FaFileAlt, FaCalendar, FaBuilding, FaBarcode, FaStar, FaRobot, FaQuestionCircle } from 'react-icons/fa';
+import { useState, useEffect } from 'react';
+import { 
+  FaArrowLeft, FaBook, FaUser, FaLayerGroup, FaFileAlt, 
+  FaCalendar, FaBuilding, FaBarcode, FaStar, FaRobot, 
+  FaQuestionCircle, FaSpinner 
+} from 'react-icons/fa';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-
-// Fallback book data if state is not passed
-const fallbackBooks = {
-  "1": {
-    id: "1",
-    title: "Atomic Habits",
-    author: "James Clear",
-    reason: "Build better habits effortlessly",
-    category: "Self-Improvement",
-    rating: 4.8,
-    genres: "Self-Help, Productivity",
-    num_pages: 320,
-    image_url: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400",
-    description: "No matter your goals, Atomic Habits offers a proven framework for improving every day. James Clear, one of the world's leading experts on habit formation, reveals practical strategies that will teach you exactly how to form good habits, break bad ones, and master the tiny behaviors that lead to remarkable results.",
-    published_year: 2018,
-    publisher: "Avery",
-    isbn: "978-0735211292"
-  }
-};
+import NotFound from './NotFound';
+import { useApp } from '../context/AppContext';
 
 export default function BookDetail() {
   const { bookId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
+  const { getBookById, askFollowUp } = useApp();
+  
+  const [book, setBook] = useState(location.state?.book || null);
+  const [loading, setLoading] = useState(!location.state?.book);
   const [showFollowUp, setShowFollowUp] = useState(false);
   const [followUpQuestion, setFollowUpQuestion] = useState('');
   const [followUpAnswer, setFollowUpAnswer] = useState('');
+  const [isAsking, setIsAsking] = useState(false);
+  const [citations, setCitations] = useState({});
 
-  // Get book from location state or use fallback
-  const book = location.state?.book || fallbackBooks[bookId] || fallbackBooks["1"];
-
-  const handleFollowUpSubmit = (e) => {
-    e.preventDefault();
-    if (!followUpQuestion.trim()) return;
-
-    // Simulate AI response to follow-up question
-    setTimeout(() => {
-      const answers = {
-        default: `Based on your interest in "${book.title}", I can tell you that this book is highly recommended for readers who enjoy ${book.genres}. The author, ${book.author}, has written several other acclaimed works in this genre.`,
-        summary: `"${book.title}" is a ${book.category.toLowerCase()} book that explores themes through ${book.author}'s unique perspective. Readers particularly appreciate the engaging narrative and insightful content.`,
-        similar: `If you enjoyed "${book.title}", you might also like works by ${book.author} or explore other books in the ${book.genres} genre.`,
-        author: `${book.author} is known for their expertise in ${book.genres}. They have received critical acclaim for their writing style and depth of research.`
+  // Fetch book if not passed via state
+  useEffect(() => {
+    if (!book && bookId) {
+      const fetchBook = async () => {
+        const result = await getBookById(bookId);
+        if (result.success) {
+          setBook(result.book);
+        } else {
+          navigate('/dashboard');
+        }
+        setLoading(false);
       };
+      fetchBook();
+    }
+  }, [bookId, book, navigate, getBookById]);
 
-      let answer = answers.default;
-      if (followUpQuestion.toLowerCase().includes('summary')) answer = answers.summary;
-      if (followUpQuestion.toLowerCase().includes('similar')) answer = answers.similar;
-      if (followUpQuestion.toLowerCase().includes('author')) answer = answers.author;
+  const handleFollowUpSubmit = async (e) => {
+    e.preventDefault();
+    if (!followUpQuestion.trim() || !book) return;
 
-      setFollowUpAnswer(answer);
-    }, 1000);
+    setIsAsking(true);
+    setFollowUpAnswer('');
+    setCitations({});
+
+    // Scope question with current book so the assistant uses this book as context
+    const scopedQuestion = book.title && book.author
+      ? `${book.title} by ${book.author}. ${book.description ? book.description.slice(0, 200) + '. ' : ''}Question: ${followUpQuestion}`
+      : followUpQuestion;
+    const result = await askFollowUp(scopedQuestion, [book]);
+    if (result.success) {
+      setFollowUpAnswer(result.answer);
+      setCitations(result.citations || {});
+    } else {
+      setFollowUpAnswer('Sorry, I encountered an error. Please try again.');
+    }
+    setIsAsking(false);
   };
+
+  const handleSuggestedQuestion = (question) => {
+    setFollowUpQuestion(question);
+    // Auto-submit after setting question
+    setTimeout(() => {
+      handleFollowUpSubmit({ preventDefault: () => {} });
+    }, 100);
+  };
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="bg-white/95 backdrop-blur-sm shadow-xl p-8 rounded-3xl border border-gray-200">
+          <div className="w-16 h-16 border-4 border-amber-200 border-t-amber-800 rounded-full animate-spin"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!book) {
+    return <NotFound />;
+  }
 
   return (
     <div className="min-h-screen">
@@ -81,6 +111,11 @@ export default function BookDetail() {
                     src={book.image_url} 
                     alt={book.title} 
                     className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.style.display = 'none';
+                      e.target.parentNode.innerHTML = '<FaBook className="w-20 h-20 text-amber-800/30" />';
+                    }}
                   />
                 ) : (
                   <FaBook className="w-20 h-20 text-amber-800/30" />
@@ -92,12 +127,14 @@ export default function BookDetail() {
             <div className="md:col-span-2">
               <div className="flex items-center gap-2 mb-2">
                 <span className="px-3 py-1 bg-amber-100 text-amber-900 rounded-full text-xs font-medium">
-                  {book.category}
+                  {book.genres?.split(',')[0]?.trim() || 'General'}
                 </span>
-                <div className="flex items-center gap-1 text-amber-600">
-                  <FaStar className="w-4 h-4" />
-                  <span className="text-sm font-medium">{book.rating}</span>
-                </div>
+                {book.rating && (
+                  <div className="flex items-center gap-1 text-amber-600">
+                    <FaStar className="w-4 h-4" />
+                    <span className="text-sm font-medium">{book.rating}</span>
+                  </div>
+                )}
               </div>
 
               <h1 className="text-4xl font-bold text-gray-900 mb-2">{book.title}</h1>
@@ -119,41 +156,51 @@ export default function BookDetail() {
                     <p className="text-sm font-medium">{book.genres}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 text-gray-600 bg-gray-50 p-3 rounded-xl">
-                  <FaFileAlt className="w-4 h-4 text-amber-700" />
-                  <div>
-                    <p className="text-xs text-gray-500">Pages</p>
-                    <p className="text-sm font-medium">{book.num_pages}</p>
+                {book.num_pages && (
+                  <div className="flex items-center gap-2 text-gray-600 bg-gray-50 p-3 rounded-xl">
+                    <FaFileAlt className="w-4 h-4 text-amber-700" />
+                    <div>
+                      <p className="text-xs text-gray-500">Pages</p>
+                      <p className="text-sm font-medium">{book.num_pages}</p>
+                    </div>
                   </div>
-                </div>
-                <div className="flex items-center gap-2 text-gray-600 bg-gray-50 p-3 rounded-xl">
-                  <FaCalendar className="w-4 h-4 text-amber-700" />
-                  <div>
-                    <p className="text-xs text-gray-500">Published</p>
-                    <p className="text-sm font-medium">{book.published_year}</p>
+                )}
+                {book.published_year && (
+                  <div className="flex items-center gap-2 text-gray-600 bg-gray-50 p-3 rounded-xl">
+                    <FaCalendar className="w-4 h-4 text-amber-700" />
+                    <div>
+                      <p className="text-xs text-gray-500">Published</p>
+                      <p className="text-sm font-medium">{book.published_year}</p>
+                    </div>
                   </div>
-                </div>
-                <div className="flex items-center gap-2 text-gray-600 bg-gray-50 p-3 rounded-xl">
-                  <FaBuilding className="w-4 h-4 text-amber-700" />
-                  <div>
-                    <p className="text-xs text-gray-500">Publisher</p>
-                    <p className="text-sm font-medium">{book.publisher}</p>
+                )}
+                {book.publisher && (
+                  <div className="flex items-center gap-2 text-gray-600 bg-gray-50 p-3 rounded-xl">
+                    <FaBuilding className="w-4 h-4 text-amber-700" />
+                    <div>
+                      <p className="text-xs text-gray-500">Publisher</p>
+                      <p className="text-sm font-medium">{book.publisher}</p>
+                    </div>
                   </div>
-                </div>
-                <div className="flex items-center gap-2 text-gray-600 bg-gray-50 p-3 rounded-xl">
-                  <FaBarcode className="w-4 h-4 text-amber-700" />
-                  <div>
-                    <p className="text-xs text-gray-500">ISBN</p>
-                    <p className="text-sm font-medium">{book.isbn}</p>
+                )}
+                {book.isbn && (
+                  <div className="flex items-center gap-2 text-gray-600 bg-gray-50 p-3 rounded-xl">
+                    <FaBarcode className="w-4 h-4 text-amber-700" />
+                    <div>
+                      <p className="text-xs text-gray-500">ISBN</p>
+                      <p className="text-sm font-medium">{book.isbn}</p>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
 
               {/* Description */}
-              <div className="mb-8">
-                <h2 className="text-lg font-semibold text-gray-800 mb-2">Description</h2>
-                <p className="text-gray-600 leading-relaxed">{book.description}</p>
-              </div>
+              {book.description && (
+                <div className="mb-8">
+                  <h2 className="text-lg font-semibold text-gray-800 mb-2">Description</h2>
+                  <p className="text-gray-600 leading-relaxed">{book.description}</p>
+                </div>
+              )}
 
               {/* Action Buttons */}
               <div className="flex flex-wrap gap-4">
@@ -162,7 +209,7 @@ export default function BookDetail() {
                   className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-amber-800 to-amber-900 text-white font-medium rounded-xl hover:shadow-lg transition-all duration-300 transform hover:scale-105"
                 >
                   <FaRobot className="w-5 h-5" />
-                  Ask AI Librarian
+                  {showFollowUp ? 'Hide AI Librarian' : 'Ask AI Librarian'}
                 </button>
                 <button className="flex items-center gap-2 px-6 py-3 border border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition-all duration-300">
                   Add to Wishlist
@@ -190,12 +237,21 @@ export default function BookDetail() {
                   onChange={(e) => setFollowUpQuestion(e.target.value)}
                   placeholder="e.g., Tell me more about this book, Similar recommendations, About the author..."
                   className="flex-1 px-4 py-3 border border-gray-300 rounded-xl bg-white/80 focus:outline-none focus:ring-2 focus:ring-amber-800"
+                  disabled={isAsking}
                 />
                 <button
                   type="submit"
-                  className="px-6 py-3 bg-gradient-to-r from-amber-800 to-amber-900 text-white font-medium rounded-xl hover:shadow-lg transition-all"
+                  disabled={isAsking || !followUpQuestion.trim()}
+                  className="px-6 py-3 bg-gradient-to-r from-amber-800 to-amber-900 text-white font-medium rounded-xl hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                 >
-                  Ask
+                  {isAsking ? (
+                    <>
+                      <FaSpinner className="w-4 h-4 animate-spin" />
+                      <span>Asking...</span>
+                    </>
+                  ) : (
+                    'Ask'
+                  )}
                 </button>
               </div>
             </form>
@@ -212,11 +268,9 @@ export default function BookDetail() {
                 ].map((q, i) => (
                   <button
                     key={i}
-                    onClick={() => {
-                      setFollowUpQuestion(q);
-                      handleFollowUpSubmit({ preventDefault: () => {} });
-                    }}
-                    className="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-full text-xs text-gray-700 transition-colors"
+                    onClick={() => handleSuggestedQuestion(q)}
+                    disabled={isAsking}
+                    className="px-3 py-1 bg-gray-100 hover:bg-gray-200 rounded-full text-xs text-gray-700 transition-colors disabled:opacity-50"
                   >
                     {q}
                   </button>
@@ -231,8 +285,27 @@ export default function BookDetail() {
                   <div className="w-8 h-8 bg-gradient-to-r from-amber-800 to-amber-900 rounded-lg flex items-center justify-center flex-shrink-0">
                     <FaRobot className="w-4 h-4 text-white" />
                   </div>
-                  <div>
+                  <div className="flex-1">
                     <p className="text-sm text-gray-800 leading-relaxed">{followUpAnswer}</p>
+                    
+                    {/* Citations */}
+                    {Object.keys(citations).length > 0 && (
+                      <div className="mt-3 pt-3 border-t border-amber-200">
+                        <p className="text-xs font-medium text-amber-800 mb-1">Sources:</p>
+                        <div className="flex flex-wrap gap-2">
+                          {Object.entries(citations).map(([ref, id]) => (
+                            <button
+                              key={ref}
+                              onClick={() => navigate(`/book/${id}`)}
+                              className="text-xs bg-white px-2 py-1 rounded border border-amber-200 hover:bg-amber-100 transition-colors"
+                            >
+                              {ref}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
                     <p className="text-xs text-gray-500 mt-2">AI Librarian • Just now</p>
                   </div>
                 </div>
