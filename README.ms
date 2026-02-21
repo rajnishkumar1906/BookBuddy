@@ -1,16 +1,3 @@
-Ahhh, got it 👍 — you’re right.
-What you pasted is **plain text**, so GitHub isn’t rendering it as Markdown. The issue is mainly:
-
-* Missing `#` for headings
-* Lists not using `-` or `*` consistently
-* Sections not separated cleanly
-* Some emoji headings missing Markdown syntax
-
-Below is a **README.md that will render correctly on GitHub**. You can **copy–paste this directly** and it will look right.
-
----
-
-```md
 # 📚 BookBuddy — Local AI Librarian (RAG-Based System)
 
 BookBuddy is a **local, explainable AI-powered virtual librarian** built using **Retrieval-Augmented Generation (RAG)**.  
