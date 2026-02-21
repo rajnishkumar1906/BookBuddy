@@ -1,9 +1,3 @@
-<<<<<<< HEAD
-Got it 👍 — no meta text, no explanations, **just the README content itself**.
-
-Here is the **clean, copy-paste-ready `README.md`** for **BookBuddy**, in the **exact same format/style as Connectly**, and **GitHub-render correct**.
-
----
 
 ```md
 # 📚 BookBuddy — Local AI Librarian
