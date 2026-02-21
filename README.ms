@@ -1,3 +1,6 @@
+I apologize for the confusion! Here's the properly formatted README.md code:
+
+```markdown
 # 📚 BookBuddy
 
 **BookBuddy** is a local, explainable AI-powered virtual librarian.  
@@ -47,22 +50,22 @@ This project demonstrates practical **ML engineering**, **RAG-based system desig
 ---
 
 ## ⚡ How It Works
+
+```
 User Query
-↓
+    ↓
 FastAPI API
-↓
+    ↓
 Embedding Model
-↓
+    ↓
 Vector Database
-↓
+    ↓
 Relevant Books
-↓
+    ↓
 LLM Reasoning
-↓
+    ↓
 Final Response
-
-
-
+```
 
 ---
 
@@ -88,28 +91,49 @@ Final Response
 ---
 
 ## 📁 Project Structure
+
+```
 BookBuddy/
 ├── backend/
 ├── frontend/
 └── README.md
-
+```
 
 ---
 
 ## 🚦 Getting Started
 
 ```bash
+# Clone the repository
+git clone https://github.com/rajnishkumar1906/BookBuddy.git
+cd BookBuddy
+
+# Install backend dependencies
 pip install -r requirements.txt
+
+# Run the server
 uvicorn backend.main:app --reload
+```
 
-Create .env:
-GEMINI_API_KEY=your_key
+Create `.env` file:
+```env
+GEMINI_API_KEY=your_key_here
+DATABASE_URL=your_database_url_here
+SECRET_KEY=your_secret_key_here
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+```
 
-👤 Author
+---
 
-Rajnish Kumar
-GitHub: https://github.com/rajnishkumar1906
-👤 Author
+## 👤 Author
 
-Rajnish Kumar
-GitHub: https://github.com/rajnishkumar1906
+**Rajnish Kumar**  
+GitHub: [@rajnishkumar1906](https://github.com/rajnishkumar1906)
+
+---
+
+## 📝 License
+
+This project is licensed under the MIT License.
+```
