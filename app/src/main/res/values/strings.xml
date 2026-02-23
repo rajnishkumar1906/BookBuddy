@@ -21,11 +21,11 @@
     <string name="common_next">Next</string>
     <string name="common_done">Done</string>
     <string name="common_confirm">Confirm</string>
+
     <!-- ========== NAVIGATION MESSAGES ========== -->
     <string name="librarian_access_redirect">Accessing Librarian Dashboard...</string>
     <string name="member_access_redirect">Accessing Member Dashboard...</string>
     <string name="logout_success">Logged out successfully</string>
-
 
     <!-- ========== SPLASH ACTIVITY ========== -->
     <string name="splash_loading">Loading BookBuddy...</string>
@@ -49,6 +49,7 @@
     <string name="login_invalid_email">Please enter a valid email</string>
     <string name="login_incorrect_password">Incorrect password</string>
     <string name="login_email_not_found">Email not found</string>
+    <string name="login_required">Please login first</string>
 
     <!-- ========== SIGNUP ACTIVITY ========== -->
     <string name="signup_title">Create New Account</string>
@@ -85,6 +86,7 @@
     <!-- ========== MEMBER DASHBOARD ========== -->
     <string name="member_dashboard_title">BookBuddy - Member</string>
     <string name="member_welcome">Welcome, %1$s!</string>
+    <string name="member_welcome_default">Welcome, Member!</string>
     <string name="member_browse_books">Browse</string>
     <string name="member_my_books">My Books</string>
     <string name="member_ai_search">AI Search</string>
@@ -131,11 +133,28 @@
     <string name="add_book_button">Add Book</string>
     <string name="add_book_success">✅ Book added successfully!</string>
     <string name="add_book_error">Error adding book</string>
+    <string name="add_book_access_denied">Access Denied: Only librarians can add books</string>
+    <string name="add_book_cover_label">Book Cover Image</string>
+    <string name="add_book_upload_image">📁 Upload Image</string>
+    <string name="add_book_take_photo">📸 Take Photo</string>
+    <string name="add_book_or_enter_url">OR enter image URL</string>
+
+    <!-- Add Book Validation -->
     <string name="add_book_validation_title">Title is required</string>
     <string name="add_book_validation_author">Author is required</string>
     <string name="add_book_validation_genre">Please select a genre</string>
     <string name="add_book_validation_custom_genre">Please enter a genre</string>
-    <string name="add_book_access_denied">Access Denied: Only librarians can add books</string>
+    <string name="error_title_required">Title is required</string>
+    <string name="error_author_required">Author is required</string>
+    <string name="error_genre_required">Please enter a genre</string>
+    <string name="error_select_genre">Please select a genre</string>
+    <string name="error_adding_book">Error adding book: %1$s</string>
+
+    <!-- Image Upload -->
+    <string name="image_selected">✅ Image selected</string>
+    <string name="photo_taken">✅ Photo taken</string>
+    <string name="uploading_progress">Uploading: %1$d%%</string>
+    <string name="error_image_upload">Image upload failed: %1$s</string>
 
     <!-- Predefined Genres -->
     <string-array name="genres">
@@ -160,9 +179,25 @@
         <item>Other</item>
     </string-array>
 
+    <!-- ========== MANAGE BOOKS ACTIVITY ========== -->
+    <string name="manage_books_title">Manage Books</string>
+    <string name="access_denied">Access Denied</string>
+    <string name="no_books_available">No books available in library</string>
+    <string name="failed_to_load_books">Failed to load books</string>
+    <string name="no_books_matching">No books matching \'%1$s\'</string>
+    <string name="cannot_delete_borrowed">Cannot delete: Book is currently borrowed</string>
+    <string name="delete_book_title">Delete Book</string>
+    <string name="delete_book_confirmation">Are you sure you want to delete \'%1$s\'?</string>
+    <string name="error_deleting_book">Error deleting book: %1$s</string>
+    <string name="book_deleted_success">Book deleted successfully</string>
+
     <!-- ========== BOOK DETAIL ACTIVITY ========== -->
-    <string name="book_detail_by_author">By %1$s</string>
+    <string name="book_detail_by">By %1$s</string>
     <string name="book_detail_genre">Genre: %1$s</string>
+    <string name="book_detail_isbn">ISBN: %1$s</string>
+    <string name="book_detail_publisher">Publisher: %1$s</string>
+    <string name="book_detail_pages">Pages: %1$d</string>
+    <string name="book_detail_language">Language: %1$s</string>
     <string name="book_detail_availability">Available: %1$d/%2$d</string>
     <string name="book_detail_no_description">No description available</string>
     <string name="book_detail_no_summary">Summary not available</string>
@@ -170,11 +205,13 @@
     <string name="book_detail_borrow">Borrow Book</string>
     <string name="book_detail_return">Return Book</string>
     <string name="book_detail_not_available">Not Available</string>
-    <string name="book_detail_borrow_success">Book borrowed successfully! Due in 14 days</string>
-    <string name="book_detail_return_success">Book returned! Thank you!</string>
+    <string name="book_detail_borrow_success">✅ Book borrowed successfully! Due in 14 days</string>
+    <string name="book_detail_return_success">✅ Book returned! Thank you!</string>
     <string name="book_detail_already_borrowed">You already borrowed this book</string>
     <string name="book_detail_not_found">Book not found</string>
     <string name="book_detail_error_loading">Error loading book</string>
+    <string name="book_not_available">Book not available</string>
+    <string name="no_active_borrow_record">No active borrow record found</string>
 
     <!-- ========== MY BOOKS ACTIVITY ========== -->
     <string name="my_books_title">My Books</string>
@@ -185,7 +222,7 @@
     <string name="my_books_empty_current">You haven\'t borrowed any books yet\n\nBrowse books and borrow your first one!</string>
     <string name="my_books_empty_history">No borrowing history yet\n\nBooks you return will appear here</string>
     <string name="my_books_due_in">Due in %1$d days</string>
-    <string name="my_books_overdue">OVERDUE</string>
+    <string name="my_books_overdue">⚠️ OVERDUE</string>
     <string name="my_books_due_today">Due today</string>
     <string name="my_books_renew">Renew</string>
     <string name="my_books_return">Return</string>
@@ -193,7 +230,7 @@
 
     <!-- ========== AI SEARCH ACTIVITY ========== -->
     <string name="ai_search_title">AI-Powered Search</string>
-    <string name="ai_search_hint">Describe what you want to read... (e.g., "I want scary books for teenagers")</string>
+    <string name="ai_search_hint">Describe what you want to read...\n(e.g., \"I want scary books for teenagers\")</string>
     <string name="ai_search_button">🔍 Search with AI</string>
     <string name="ai_search_understanding">🔍 Looking for: %1$s</string>
     <string name="ai_search_empty">No books found matching your description</string>
@@ -202,7 +239,21 @@
     <string name="ai_search_basic_mode">Using basic search (AI unavailable)</string>
     <string name="ai_search_processing">Processing your request...</string>
 
-    <!-- ========== BOOK ADAPTER (List Items) ========== -->
+    <!-- ========== POPULAR & RECOMMENDED BOOKS ========== -->
+    <string name="popular_books">📈 Popular Books</string>
+    <string name="recently_added">🆕 Recently Added</string>
+    <string name="recommended_for_you">✨ Recommended for You</string>
+    <string name="because_you_read">Because you read %1$s</string>
+    <string name="no_recommendations">No recommendations yet. Start borrowing books!</string>
+
+    <!-- =========️ ONBOARDING ========== -->
+    <string name="welcome_new_user">Welcome to BookBuddy! 👋</string>
+    <string name="select_favorite_genres">Select your favorite genres to get personalized recommendations</string>
+    <string name="skip_for_now">Skip for now</string>
+    <string name="save_preferences">Save Preferences</string>
+    <string name="preferences_saved">Preferences saved! Check out your recommendations.</string>
+
+    <!-- ========== BOOK ADAPTER ========== -->
     <string name="book_item_by">by %1$s</string>
     <string name="book_item_unknown_author">Unknown Author</string>
     <string name="book_item_uncategorized">Uncategorized</string>
@@ -219,6 +270,7 @@
     <string name="error_loading_data">Error loading data</string>
     <string name="error_saving_data">Error saving data</string>
     <string name="error_permission_denied">You don\'t have permission to perform this action</string>
+    <string name="error_verifying_access">Error verifying access</string>
 
     <!-- ========== VALIDATION MESSAGES ========== -->
     <string name="validation_required">%1$s is required</string>
@@ -231,6 +283,10 @@
     <string name="role_librarian">librarian</string>
     <string name="role_display_member">Member</string>
     <string name="role_display_librarian">Librarian</string>
+    <string-array name="role_options">
+        <item>Member</item>
+        <item>Librarian</item>
+    </string-array>
 
     <!-- ========== STATUS MESSAGES ========== -->
     <string name="status_available">Available</string>
@@ -262,9 +318,8 @@
     <string name="dialog_cancel">Cancel</string>
     <string name="dialog_ok">OK</string>
 
-    <!-- =========️ LIBRARIAN SECRET CODE (Store securely) ========== -->
+    <!-- =========️ LIBRARIAN SECRET CODE ========== -->
     <string name="librarian_secret_code_hint">LIB2024</string>
-    <!-- Note: In production, move this to BuildConfig or secure storage -->
 
     <!-- ========== MISC ========== -->
     <string name="or">OR</string>
@@ -274,43 +329,8 @@
     <string name="no_internet">No internet connection</string>
     <string name="retry">Retry</string>
 
+    <!-- Splash Screen -->
+    <string name="app_tagline">Your Cloud Library Companion</string>
+    <string name="version">Version 1.0</string>
 
-    <string name="member_welcome_default">Welcome, Member!</string>
-
-    <string name="add_book_cover_label">Book Cover Image</string>
-    <string name="add_book_upload_image">📁 Upload Image</string>
-    <string name="add_book_take_photo">📸 Take Photo</string>
-    <string name="add_book_or_enter_url">OR enter image URL</string>
-
-    <!-- Image Upload Strings -->
-    <string name="image_selected">✅ Image selected</string>
-    <string name="photo_taken">✅ Photo taken</string>
-    <string name="uploading_progress">Uploading: %1$d%%</string>
-
-    <!-- Error Messages -->
-    <string name="login_required">Please login first</string>
-    <string name="error_verifying_access">Error verifying access</string>
-    <string name="error_title_required">Title is required</string>
-    <string name="error_author_required">Author is required</string>
-    <string name="error_genre_required">Please enter a genre</string>
-    <string name="error_select_genre">Please select a genre</string>
-    <string name="error_image_upload">Image upload failed: %1$s</string>
-    <string name="error_adding_book">Error adding book: %1$s</string>
-
-    <!-- ========== MANAGE BOOKS ACTIVITY ========== -->
-    <string name="manage_books_title">Manage Books</string>
-    <string name="access_denied">Access Denied</string>
-    <string name="no_books_available">No books available in library</string>
-    <string name="failed_to_load_books">Failed to load books</string>
-    <string name="no_books_matching">No books matching \'%1$s\'</string>
-    <string name="cannot_delete_borrowed">Cannot delete: Book is currently borrowed</string>
-    <string name="delete_book_title">Delete Book</string>
-    <string name="delete_book_confirmation">Are you sure you want to delete \'%1$s\'?</string>
-    <string name="error_deleting_book">Error deleting book: %1$s</string>
-    <string name="book_deleted_success">Book deleted successfully</string>
-
-    <string-array name="role_options">
-        <item>Member</item>
-        <item>Librarian</item>
-    </string-array>
 </resources>

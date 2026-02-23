@@ -5,10 +5,9 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    android:background="@color/purple_500"
+    android:background="@color/peacock_green"
     android:padding="24dp">
 
-    <!-- Logo Animation Container -->
     <androidx.cardview.widget.CardView
         android:layout_width="150dp"
         android:layout_height="150dp"
@@ -24,50 +23,45 @@
             android:gravity="center"
             android:background="@color/white">
 
-            <!-- Book Icon -->
             <ImageView
                 android:id="@+id/logoBook"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
                 android:src="@drawable/ic_splash_book"
-                android:tint="@color/purple_500"/>
+                android:tint="@color/peacock_green"/>
 
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
-    <!-- App Name -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="BOOKBUDDY"
+        android:text="@string/app_name_full"
         android:textSize="36sp"
         android:textStyle="bold"
         android:textColor="@color/white"
         android:letterSpacing="0.1"
         android:layout_marginBottom="8dp"/>
 
-    <!-- Tagline -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Your Cloud Library Companion"
+        android:text="@string/app_tagline"
         android:textSize="16sp"
         android:textColor="@color/white"
         android:alpha="0.9"
         android:letterSpacing="0.05"/>
 
-    <!-- Loading Indicator -->
     <ProgressBar
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_marginTop="48dp"
         android:indeterminateTint="@color/white"/>
 
-    <!-- Version Text -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Version 1.0"
+        android:text="@string/version"
         android:textSize="12sp"
         android:textColor="@color/white"
         android:alpha="0.7"

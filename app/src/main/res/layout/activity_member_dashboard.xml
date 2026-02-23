@@ -82,30 +82,99 @@
         android:visibility="gone"
         android:indeterminateTint="@color/peacock_green"/>
 
-    <LinearLayout
-        android:id="@+id/emptyStateLayout"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:visibility="gone">
+        android:fillViewport="true">
 
-        <TextView
-            android:id="@+id/emptyStateText"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/mainContentLayout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/member_empty_books"
-            android:textSize="18sp"
-            android:textColor="@color/gray"
-            android:padding="16dp"
-            android:gravity="center"/>
+            android:orientation="vertical">
 
-    </LinearLayout>
+            <!-- Popular Books Section -->
+            <TextView
+                android:id="@+id/popularBooksLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/popular_books"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/peacock_green"
+                android:paddingHorizontal="16dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="8dp"
+                android:visibility="gone"/>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="visible" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/popularRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
 
+            <!-- Recommended Books Section -->
+            <TextView
+                android:id="@+id/recommendedLabel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/recommended_for_you"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/peacock_green"
+                android:paddingHorizontal="16dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="8dp"
+                android:visibility="gone"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recommendedRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:orientation="horizontal"
+                android:visibility="gone"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+
+            <!-- All Books Section -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="All Books"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@color/peacock_green"
+                android:paddingHorizontal="16dp"
+                android:paddingTop="16dp"
+                android:paddingBottom="8dp"/>
+
+            <LinearLayout
+                android:id="@+id/emptyStateLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="32dp"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/emptyStateText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/member_empty_books"
+                    android:textSize="18sp"
+                    android:textColor="@color/gray"
+                    android:gravity="center"/>
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="visible"
+                android:nestedScrollingEnabled="false"/>
+
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>
