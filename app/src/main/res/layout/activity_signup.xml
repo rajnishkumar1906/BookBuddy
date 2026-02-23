@@ -8,14 +8,13 @@
     android:gravity="center_horizontal"
     android:background="@color/white">
 
-    <!-- App Logo/Title -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="BOOKBUDDY"
         android:textSize="32sp"
         android:textStyle="bold"
-        android:textColor="@color/purple_500"
+        android:textColor="@color/peacock_green"
         android:layout_marginTop="32dp"
         android:layout_marginBottom="16dp"/>
 
@@ -25,17 +24,19 @@
         android:layout_height="wrap_content"
         android:text="Create New Account"
         android:textSize="20sp"
-        android:textColor="@color/black"
-        android:layout_marginBottom="24dp"/>
+        android:textColor="@color/peacock_green_dark"
+    android:layout_marginBottom="24dp"/>
 
-    <!-- Name Input Field -->
+    <!-- Name Input Field with Peacock Green theme -->
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        app:boxStrokeColor="@color/purple_500"
-        app:hintTextColor="@color/purple_500">
+        app:boxStrokeColor="@color/peacock_green"
+        app:boxStrokeErrorColor="@color/error_red"
+        app:hintTextColor="@color/peacock_green"
+        app:errorTextColor="@color/error_red">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/nameInput"
@@ -44,17 +45,21 @@
             android:hint="Full Name"
             android:inputType="textPersonName"
             android:padding="12dp"
-            android:textSize="16sp"/>
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            android:textColorHint="@color/peacock_green_light"/>
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Email Input Field -->
+    <!-- Email Input Field with Peacock Green theme -->
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        app:boxStrokeColor="@color/purple_500"
-        app:hintTextColor="@color/purple_500">
+        app:boxStrokeColor="@color/peacock_green"
+        app:boxStrokeErrorColor="@color/error_red"
+        app:hintTextColor="@color/peacock_green"
+        app:errorTextColor="@color/error_red">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/emailInput"
@@ -63,17 +68,21 @@
             android:hint="Email Address"
             android:inputType="textEmailAddress"
             android:padding="12dp"
-            android:textSize="16sp"/>
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            android:textColorHint="@color/peacock_green_light"/>
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Password Input Field -->
+    <!-- Password Input Field with Peacock Green theme -->
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        app:boxStrokeColor="@color/purple_500"
-        app:hintTextColor="@color/purple_500"
+        app:boxStrokeColor="@color/peacock_green"
+        app:boxStrokeErrorColor="@color/error_red"
+        app:hintTextColor="@color/peacock_green"
+        app:errorTextColor="@color/error_red"
         app:passwordToggleEnabled="true">
 
         <com.google.android.material.textfield.TextInputEditText
@@ -83,57 +92,92 @@
             android:hint="Password"
             android:inputType="textPassword"
             android:padding="12dp"
-            android:textSize="16sp"/>
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            android:textColorHint="@color/peacock_green_light"/>
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- 👇 NEW: Role Selection Spinner -->
+    <!-- Confirm Password Input Field (NEW) with Peacock Green theme -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        app:boxStrokeColor="@color/peacock_green"
+        app:boxStrokeErrorColor="@color/error_red"
+        app:hintTextColor="@color/peacock_green"
+        app:errorTextColor="@color/error_red"
+        app:passwordToggleEnabled="true">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/confirmPasswordInput"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Confirm Password"
+            android:inputType="textPassword"
+            android:padding="12dp"
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            android:textColorHint="@color/peacock_green_light"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Role Selection Label -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Select Role"
         android:textSize="14sp"
-        android:textColor="@android:color/black"
+        android:textColor="@color/peacock_green_dark"
         android:layout_marginBottom="8dp"
-        android:layout_marginTop="8dp"/>
+        android:layout_marginTop="8dp"
+        android:textStyle="bold"/>
 
+    <!-- Role Selection Spinner with Peacock Green theme -->
     <Spinner
         android:id="@+id/roleSpinner"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_marginBottom="16dp"
-        android:background="@android:drawable/spinner_background"/>
+        android:background="@drawable/spinner_background_peacock"
+        android:popupBackground="@color/white"
+        android:textColor="@color/peacock_green_dark"/>
 
-    <!-- 👇 NEW: Admin Code Input (hidden by default, shown when Librarian selected) -->
+    <!-- Admin Code Input (hidden by default, shown when Librarian selected) -->
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="24dp"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        app:boxStrokeColor="@color/purple_500"
-        app:hintTextColor="@color/purple_500"
+        app:boxStrokeColor="@color/peacock_green"
+        app:boxStrokeErrorColor="@color/error_red"
+        app:hintTextColor="@color/peacock_green"
+        app:errorTextColor="@color/error_red"
         app:passwordToggleEnabled="true">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/adminCodeInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Admin Secret Code"
+            android:hint="Librarian Secret Code"
             android:inputType="textPassword"
             android:padding="12dp"
             android:textSize="16sp"
+            android:textColor="@color/black"
+            android:textColorHint="@color/peacock_green_light"
             android:visibility="gone"/>
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- Progress Bar -->
+    <!-- Progress Bar with Peacock Green tint -->
     <ProgressBar
         android:id="@+id/progressBar"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:layout_gravity="center"
         android:layout_marginBottom="16dp"
-        android:visibility="gone"/>
+        android:visibility="gone"
+        android:indeterminateTint="@color/peacock_green"/>
 
-    <!-- Sign Up Button -->
+    <!-- Sign Up Button with Peacock Green gradient -->
     <Button
         android:id="@+id/signupButton"
         android:layout_width="match_parent"
@@ -141,7 +185,10 @@
         android:text="Sign Up"
         android:textSize="16sp"
         android:textStyle="bold"
-        android:backgroundTint="@color/purple_500"
+        android:textColor="@color/white"
+        android:backgroundTint="@color/peacock_green"
+        android:stateListAnimator="@null"
+        android:elevation="4dp"
         android:layout_marginBottom="16dp"/>
 
     <!-- Divider -->
@@ -156,20 +203,20 @@
             android:layout_width="0dp"
             android:layout_height="1dp"
             android:layout_weight="1"
-            android:background="@android:color/darker_gray"/>
+            android:background="@color/peacock_green_light"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="OR"
             android:paddingHorizontal="16dp"
-            android:textColor="@android:color/darker_gray"/>
+            android:textColor="@color/peacock_green"/>
 
         <View
             android:layout_width="0dp"
             android:layout_height="1dp"
             android:layout_weight="1"
-            android:background="@android:color/darker_gray"/>
+            android:background="@color/peacock_green_light"/>
     </LinearLayout>
 
     <!-- Login Link -->
@@ -190,7 +237,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Login"
-            android:textColor="@color/purple_500"
+            android:textColor="@color/peacock_green"
             android:textStyle="bold"
             android:padding="8dp"/>
     </LinearLayout>

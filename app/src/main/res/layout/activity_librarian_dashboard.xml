@@ -1,190 +1,142 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/white">
 
-    <!-- Header -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="16dp"
-        android:background="@color/purple_500">
+        android:orientation="vertical">
 
-        <Button
-            android:id="@+id/btnBack"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="← Back"
-            android:textColor="@color/white"
-            android:backgroundTint="@android:color/transparent"
-            android:textSize="16sp"/>
+        <!-- Toolbar -->
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/purple_500"
+            app:titleTextColor="@color/white"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
+        <!-- Welcome Text -->
         <TextView
-            android:layout_width="0dp"
+            android:id="@+id/welcomeText"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Librarian Dashboard"
+            android:text="Welcome, Librarian!"
             android:textSize="20sp"
+            android:textColor="@color/purple_500"
+            android:padding="16dp"
             android:textStyle="bold"
-            android:textColor="@color/white"
-            android:gravity="center"/>
+            android:visibility="gone"/>
 
-        <Button
-            android:id="@+id/btnRefresh"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="↻"
-            android:textColor="@color/white"
-            android:backgroundTint="@android:color/transparent"
-            android:textSize="20sp"/>
-    </LinearLayout>
+        <!-- Progress Bar -->
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center"
+            android:visibility="gone" />
 
-    <!-- Stats Card -->
-    <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        app:cardCornerRadius="12dp"
-        app:cardElevation="4dp">
-
+        <!-- Statistics Card -->
         <TextView
             android:id="@+id/tvStats"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="20dp"
-            android:text="📊 Loading statistics..."
+            android:padding="16dp"
+            android:text="Loading statistics..."
             android:textSize="16sp"
-            android:lineSpacingExtra="4dp"/>
-    </androidx.cardview.widget.CardView>
+            android:background="@color/light_gray"
+            android:layout_margin="8dp"
+            android:fontFamily="monospace"/>
 
-    <!-- Action Buttons -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="16dp">
+        <!-- Quick Actions -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="QUICK ACTIONS"
+            android:textSize="14sp"
+            android:textColor="@android:color/darker_gray"
+            android:padding="8dp"
+            android:layout_marginTop="8dp"/>
 
-        <!-- Manual Add Button -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/btnManualAdd"
-            android:layout_width="0dp"
-            android:layout_height="120dp"
-            android:layout_weight="1"
-            android:layout_marginEnd="8dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="4dp"
-            android:foreground="?android:attr/selectableItemBackground"
-            android:clickable="true"
-            android:focusable="true">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="8dp">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:background="@color/purple_500"
-                android:padding="16dp">
+            <Button
+                android:id="@+id/btnAddBook"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="➕ Add Book"
+                android:backgroundTint="@color/purple_500"
+                android:layout_margin="4dp"/>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="📝"
-                    android:textSize="40sp"/>
+            <Button
+                android:id="@+id/btnManageBooks"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="📚 Manage Books"
+                android:backgroundTint="@color/purple_500"
+                android:layout_margin="4dp"/>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Add Book"
-                    android:textColor="@color/white"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:layout_marginTop="8dp"/>
+        </LinearLayout>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Manual Entry"
-                    android:textColor="@color/white"
-                    android:textSize="12sp"
-                    android:alpha="0.8"/>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="8dp">
 
-        <!-- View All Books Button -->
-        <androidx.cardview.widget.CardView
-            android:id="@+id/btnViewAllBooks"
-            android:layout_width="0dp"
-            android:layout_height="120dp"
-            android:layout_weight="1"
-            android:layout_marginStart="8dp"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="4dp"
-            android:foreground="?android:attr/selectableItemBackground"
-            android:clickable="true"
-            android:focusable="true">
+            <Button
+                android:id="@+id/btnViewBorrowings"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="📌 Borrowings"
+                android:backgroundTint="@color/purple_500"
+                android:layout_margin="4dp"/>
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:background="@color/teal_700"
-                android:padding="16dp">
+            <Button
+                android:id="@+id/btnStats"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="📊 Refresh Stats"
+                android:backgroundTint="@color/purple_500"
+                android:layout_margin="4dp"/>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="📚"
-                    android:textSize="40sp"/>
+            <Button
+                android:id="@+id/btnRefresh"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="🔄 Refresh"
+                android:backgroundTint="@color/purple_500"
+                android:layout_margin="4dp"/>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="View All"
-                    android:textColor="@color/white"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:layout_marginTop="8dp"/>
+        </LinearLayout>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Browse Catalog"
-                    android:textColor="@color/white"
-                    android:textSize="12sp"
-                    android:alpha="0.8"/>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
+        <!-- Recent Books Section -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="RECENTLY ADDED BOOKS"
+            android:textSize="14sp"
+            android:textColor="@android:color/darker_gray"
+            android:padding="8dp"
+            android:layout_marginTop="16dp"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_margin="8dp"/>
+
     </LinearLayout>
-
-    <!-- Progress Bar -->
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_gravity="center"
-        android:layout_margin="16dp"
-        android:visibility="gone"/>
-
-    <!-- Recent Books Section -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Recently Added"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:paddingHorizontal="16dp"
-        android:paddingTop="16dp"
-        android:paddingBottom="8dp"/>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="8dp"/>
-
-</LinearLayout>
+</ScrollView>

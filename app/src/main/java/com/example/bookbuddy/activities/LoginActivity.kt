@@ -9,13 +9,18 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.bookbuddy.R
+import com.example.bookbuddy.models.User
 import com.google.android.material.textfield.TextInputEditText
-import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class LoginActivity : AppCompatActivity() {
 
+    // Firebase
     private lateinit var auth: FirebaseAuth
+    private lateinit var db: FirebaseFirestore
+
+    // UI Components
     private lateinit var emailInput: TextInputEditText
     private lateinit var passwordInput: TextInputEditText
     private lateinit var loginButton: Button
@@ -30,8 +35,10 @@ class LoginActivity : AppCompatActivity() {
         try {
             setContentView(R.layout.activity_login)
 
+            // Initialize Firebase
             try {
                 auth = FirebaseAuth.getInstance()
+                db = FirebaseFirestore.getInstance()
             } catch (e: Exception) {
                 Toast.makeText(this, "Firebase initialization failed: ${e.message}", Toast.LENGTH_LONG).show()
                 finish()
@@ -41,14 +48,15 @@ class LoginActivity : AppCompatActivity() {
             // Check if user is already logged in
             try {
                 if (auth.currentUser != null) {
-                    navigateToMain()
+                    // User is already logged in, navigate to appropriate dashboard
+                    navigateBasedOnRole()
                     return
                 }
             } catch (e: Exception) {
                 Toast.makeText(this, "Error checking login status", Toast.LENGTH_SHORT).show()
             }
 
-            // Initialize views with try-catch
+            // Initialize views
             try {
                 initializeViews()
             } catch (e: Exception) {
@@ -137,6 +145,13 @@ class LoginActivity : AppCompatActivity() {
                     passwordInput.requestFocus()
                     return
                 }
+
+                // Basic email validation
+                if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    emailInput.error = "Please enter a valid email"
+                    emailInput.requestFocus()
+                    return
+                }
             } catch (e: Exception) {
                 Toast.makeText(this, "Validation error", Toast.LENGTH_SHORT).show()
                 return
@@ -149,18 +164,33 @@ class LoginActivity : AppCompatActivity() {
             auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener { task ->
                     try {
-                        showLoading(false)
-
                         if (task.isSuccessful) {
                             Toast.makeText(
                                 this,
                                 "Login successful! Welcome back!",
                                 Toast.LENGTH_SHORT
                             ).show()
-                            navigateToMain()
+
+                            // Navigate based on user role
+                            navigateBasedOnRole()
                         } else {
+                            showLoading(false)
                             val errorMsg = task.exception?.message ?: "Login failed"
-                            Toast.makeText(this, errorMsg, Toast.LENGTH_LONG).show()
+
+                            // Handle specific error messages
+                            when {
+                                errorMsg.contains("password", ignoreCase = true) -> {
+                                    passwordInput.error = "Incorrect password"
+                                    passwordInput.requestFocus()
+                                }
+                                errorMsg.contains("email", ignoreCase = true) -> {
+                                    emailInput.error = "Email not found"
+                                    emailInput.requestFocus()
+                                }
+                                else -> {
+                                    Toast.makeText(this, errorMsg, Toast.LENGTH_LONG).show()
+                                }
+                            }
                         }
                     } catch (e: Exception) {
                         showLoading(false)
@@ -181,6 +211,129 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Navigate to appropriate dashboard based on user role
+     */
+    private fun navigateBasedOnRole() {
+        try {
+            val userId = auth.currentUser?.uid
+
+            if (userId == null) {
+                // Fallback to member dashboard if no user ID
+                navigateToMemberDashboard()
+                return
+            }
+
+            showLoading(true)
+
+            // Fetch user role from Firestore
+            db.collection("users").document(userId)
+                .get()
+                .addOnSuccessListener { document ->
+                    showLoading(false)
+
+                    if (document.exists()) {
+                        val user = document.toObject(User::class.java)
+
+                        if (user?.role == "librarian") {
+                            // Librarian dashboard
+                            navigateToLibrarianDashboard()
+                        } else {
+                            // Member dashboard (default)
+                            navigateToMemberDashboard()
+                        }
+                    } else {
+                        // User document doesn't exist - create it
+                        createUserDocumentAndNavigate(userId)
+                    }
+                }
+                .addOnFailureListener { e ->
+                    showLoading(false)
+
+                    // Log the error but still navigate (default to member)
+                    android.util.Log.e("LoginActivity", "Error fetching role: ${e.message}")
+
+                    // Default to member dashboard
+                    Toast.makeText(
+                        this,
+                        "Using default access. Role not found.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    navigateToMemberDashboard()
+                }
+        } catch (e: Exception) {
+            showLoading(false)
+            android.util.Log.e("LoginActivity", "Navigation error: ${e.message}")
+            navigateToMemberDashboard() // Fallback
+        }
+    }
+
+    /**
+     * Create user document if it doesn't exist and navigate
+     */
+    private fun createUserDocumentAndNavigate(userId: String) {
+        try {
+            // Create new user document with member role
+            val user = User(
+                id = userId,
+                name = auth.currentUser?.displayName ?: "User",
+                email = auth.currentUser?.email ?: "",
+                role = "member"  // Default role
+            )
+
+            db.collection("users").document(userId)
+                .set(user)
+                .addOnSuccessListener {
+                    Toast.makeText(this, "Welcome! Your account is set up.", Toast.LENGTH_SHORT).show()
+                    navigateToMemberDashboard()
+                }
+                .addOnFailureListener { e ->
+                    android.util.Log.e("LoginActivity", "Error creating user: ${e.message}")
+                    navigateToMemberDashboard() // Navigate anyway
+                }
+        } catch (e: Exception) {
+            android.util.Log.e("LoginActivity", "Error in createUserDocumentAndNavigate: ${e.message}")
+            navigateToMemberDashboard()
+        }
+    }
+
+    /**
+     * Navigate to Member Dashboard
+     */
+    private fun navigateToMemberDashboard() {
+        try {
+            val intent = Intent(this, MemberDashboardActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            finish()
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+        } catch (e: Exception) {
+            android.util.Log.e("LoginActivity", "Navigation to member dashboard failed: ${e.message}")
+            Toast.makeText(this, "Navigation error", Toast.LENGTH_SHORT).show()
+            finish()
+        }
+    }
+
+    /**
+     * Navigate to Librarian Dashboard
+     */
+    private fun navigateToLibrarianDashboard() {
+        try {
+            val intent = Intent(this, LibrarianDashboardActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            finish()
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+        } catch (e: Exception) {
+            android.util.Log.e("LoginActivity", "Navigation to librarian dashboard failed: ${e.message}")
+
+            // Fallback to member dashboard
+            Toast.makeText(this, "Error accessing librarian panel. Using member view.", Toast.LENGTH_SHORT).show()
+            navigateToMemberDashboard()
+        }
+    }
+
     private fun showLoading(isLoading: Boolean) {
         try {
             if (isLoading) {
@@ -193,6 +346,8 @@ class LoginActivity : AppCompatActivity() {
                 signupLink.alpha = 0.5f
                 forgotPasswordLink.isEnabled = false
                 forgotPasswordLink.alpha = 0.5f
+                emailInput.isEnabled = false
+                passwordInput.isEnabled = false
             } else {
                 progressBar.visibility = View.GONE
                 loginButton.isEnabled = true
@@ -203,22 +358,23 @@ class LoginActivity : AppCompatActivity() {
                 signupLink.alpha = 1.0f
                 forgotPasswordLink.isEnabled = true
                 forgotPasswordLink.alpha = 1.0f
+                emailInput.isEnabled = true
+                passwordInput.isEnabled = true
             }
         } catch (e: Exception) {
             // Ignore UI errors during loading state
         }
     }
 
-    private fun navigateToMain() {
+    override fun onStart() {
+        super.onStart()
+        // Check if user is already signed in when activity starts
         try {
-            val intent = Intent(this, MainActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent)
-            finish()
-            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+            if (auth.currentUser != null) {
+                navigateBasedOnRole()
+            }
         } catch (e: Exception) {
-            Toast.makeText(this, "Navigation error", Toast.LENGTH_SHORT).show()
-            finish()
+            android.util.Log.e("LoginActivity", "Error in onStart: ${e.message}")
         }
     }
 }

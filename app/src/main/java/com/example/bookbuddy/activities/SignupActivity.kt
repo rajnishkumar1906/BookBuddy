@@ -19,19 +19,26 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 class SignupActivity : AppCompatActivity() {
 
+    // Firebase
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
+
+    // UI Components
     private lateinit var nameInput: TextInputEditText
     private lateinit var emailInput: TextInputEditText
     private lateinit var passwordInput: TextInputEditText
+    private lateinit var confirmPasswordInput: TextInputEditText
     private lateinit var roleSpinner: Spinner
     private lateinit var adminCodeInput: TextInputEditText
     private lateinit var signupButton: Button
     private lateinit var loginLink: TextView
     private lateinit var progressBar: ProgressBar
 
-    // Secret code for librarian registration
-    private val LIBRARIAN_SECRET_CODE = "LIB2024"
+    // Secret code for librarian registration (in production, move to secure location)
+    private val LIBRARIAN_SECRET_CODE = "LIB2024" // You can change this
+
+    // Selected role
+    private var selectedRole = "member" // Default
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -39,7 +46,7 @@ class SignupActivity : AppCompatActivity() {
         try {
             setContentView(R.layout.activity_signup)
 
-            // Initialize Firebase with try-catch
+            // Initialize Firebase
             try {
                 auth = FirebaseAuth.getInstance()
                 db = FirebaseFirestore.getInstance()
@@ -49,7 +56,18 @@ class SignupActivity : AppCompatActivity() {
                 return
             }
 
-            // Initialize views with try-catch
+            // Check if user is already logged in
+            try {
+                if (auth.currentUser != null) {
+                    // User already logged in, go to appropriate dashboard
+                    navigateBasedOnRole()
+                    return
+                }
+            } catch (e: Exception) {
+                Toast.makeText(this, "Error checking login status", Toast.LENGTH_SHORT).show()
+            }
+
+            // Initialize views
             try {
                 initializeViews()
                 setupRoleSpinner()
@@ -59,7 +77,7 @@ class SignupActivity : AppCompatActivity() {
                 return
             }
 
-            // Set click listeners with try-catch
+            // Set click listeners
             try {
                 setClickListeners()
             } catch (e: Exception) {
@@ -77,6 +95,7 @@ class SignupActivity : AppCompatActivity() {
             nameInput = findViewById(R.id.nameInput)
             emailInput = findViewById(R.id.emailInput)
             passwordInput = findViewById(R.id.passwordInput)
+            confirmPasswordInput = findViewById(R.id.confirmPasswordInput)
             roleSpinner = findViewById(R.id.roleSpinner)
             adminCodeInput = findViewById(R.id.adminCodeInput)
             signupButton = findViewById(R.id.signupButton)
@@ -85,6 +104,7 @@ class SignupActivity : AppCompatActivity() {
 
             // Initially hide admin code input
             adminCodeInput.visibility = View.GONE
+            adminCodeInput.hint = "Enter Librarian Secret Code"
         } catch (e: Exception) {
             throw Exception("View initialization failed: ${e.message}")
         }
@@ -102,8 +122,14 @@ class SignupActivity : AppCompatActivity() {
             roleSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                     try {
+                        // Update selected role
+                        selectedRole = if (position == 1) "librarian" else "member"
+
                         // Show admin code input only when "Librarian" is selected
                         adminCodeInput.visibility = if (position == 1) View.VISIBLE else View.GONE
+
+                        // Clear any previous errors
+                        adminCodeInput.error = null
                     } catch (e: Exception) {
                         // Ignore spinner errors
                     }
@@ -112,6 +138,7 @@ class SignupActivity : AppCompatActivity() {
                 override fun onNothingSelected(parent: AdapterView<*>?) {
                     try {
                         adminCodeInput.visibility = View.GONE
+                        selectedRole = "member"
                     } catch (e: Exception) {
                         // Ignore
                     }
@@ -132,6 +159,7 @@ class SignupActivity : AppCompatActivity() {
                 try {
                     startActivity(Intent(this, LoginActivity::class.java))
                     finish()
+                    overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
                 } catch (e: Exception) {
                     Toast.makeText(this, "Cannot open login", Toast.LENGTH_SHORT).show()
                 }
@@ -147,23 +175,38 @@ class SignupActivity : AppCompatActivity() {
             val name = try { nameInput.text.toString().trim() } catch (e: Exception) { "" }
             val email = try { emailInput.text.toString().trim() } catch (e: Exception) { "" }
             val password = try { passwordInput.text.toString().trim() } catch (e: Exception) { "" }
-            val selectedRole = try { roleSpinner.selectedItem.toString() } catch (e: Exception) { "Member" }
+            val confirmPassword = try { confirmPasswordInput.text.toString().trim() } catch (e: Exception) { "" }
             val adminCode = try { adminCodeInput.text.toString().trim() } catch (e: Exception) { "" }
 
-            // Validate inputs with try-catch
+            // Validate inputs
             try {
+                // Name validation
                 if (name.isEmpty()) {
                     nameInput.error = "Name is required"
                     nameInput.requestFocus()
                     return
                 }
 
+                if (name.length < 2) {
+                    nameInput.error = "Name must be at least 2 characters"
+                    nameInput.requestFocus()
+                    return
+                }
+
+                // Email validation
                 if (email.isEmpty()) {
                     emailInput.error = "Email is required"
                     emailInput.requestFocus()
                     return
                 }
 
+                if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    emailInput.error = "Please enter a valid email"
+                    emailInput.requestFocus()
+                    return
+                }
+
+                // Password validation
                 if (password.isEmpty()) {
                     passwordInput.error = "Password is required"
                     passwordInput.requestFocus()
@@ -176,22 +219,28 @@ class SignupActivity : AppCompatActivity() {
                     return
                 }
 
-                // Validate email format
-                if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                    emailInput.error = "Please enter a valid email"
-                    emailInput.requestFocus()
+                // Confirm password validation
+                if (confirmPassword.isEmpty()) {
+                    confirmPasswordInput.error = "Please confirm your password"
+                    confirmPasswordInput.requestFocus()
+                    return
+                }
+
+                if (password != confirmPassword) {
+                    confirmPasswordInput.error = "Passwords do not match"
+                    confirmPasswordInput.requestFocus()
                     return
                 }
 
                 // Validate librarian secret code if librarian role selected
-                if (selectedRole == "Librarian") {
+                if (selectedRole == "librarian") {
                     if (adminCode.isEmpty()) {
-                        adminCodeInput.error = "Admin code is required for librarian registration"
+                        adminCodeInput.error = "Secret code is required for librarian registration"
                         adminCodeInput.requestFocus()
                         return
                     }
                     if (adminCode != LIBRARIAN_SECRET_CODE) {
-                        adminCodeInput.error = "Invalid admin code"
+                        adminCodeInput.error = "Invalid secret code"
                         adminCodeInput.requestFocus()
                         return
                     }
@@ -210,18 +259,15 @@ class SignupActivity : AppCompatActivity() {
                     try {
                         if (task.isSuccessful) {
                             val userId = try {
-                                auth.currentUser?.uid ?: return@addOnCompleteListener
+                                auth.currentUser?.uid ?: run {
+                                    showLoading(false)
+                                    Toast.makeText(this, "Failed to get user ID", Toast.LENGTH_SHORT).show()
+                                    return@addOnCompleteListener
+                                }
                             } catch (e: Exception) {
                                 showLoading(false)
-                                Toast.makeText(this, "Failed to get user ID", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this, "Error getting user ID", Toast.LENGTH_SHORT).show()
                                 return@addOnCompleteListener
-                            }
-
-                            // Determine role (Member or Librarian)
-                            val finalRole = if (selectedRole == "Librarian" && adminCode == LIBRARIAN_SECRET_CODE) {
-                                "librarian"
-                            } else {
-                                "member"
                             }
 
                             // Create user profile in Firestore
@@ -230,7 +276,7 @@ class SignupActivity : AppCompatActivity() {
                                     id = userId,
                                     name = name,
                                     email = email,
-                                    role = finalRole
+                                    role = selectedRole  // Use the selected role
                                 )
                             } catch (e: Exception) {
                                 showLoading(false)
@@ -241,38 +287,38 @@ class SignupActivity : AppCompatActivity() {
                             // Save to Firestore
                             db.collection("users").document(userId)
                                 .set(user)
-                                .addOnCompleteListener { dbTask ->
+                                .addOnSuccessListener {
                                     try {
                                         showLoading(false)
 
-                                        if (dbTask.isSuccessful) {
-                                            val roleMessage = if (finalRole == "librarian")
-                                                "Librarian account created!"
-                                            else
-                                                "Member account created!"
-
-                                            Toast.makeText(this, roleMessage, Toast.LENGTH_SHORT).show()
-
-                                            // Navigate to Main Activity
-                                            try {
-                                                startActivity(Intent(this, MainActivity::class.java))
-                                                finish()
-                                            } catch (e: Exception) {
-                                                Toast.makeText(this, "Navigation error", Toast.LENGTH_SHORT).show()
-                                            }
+                                        // Show success message based on role
+                                        val successMessage = if (selectedRole == "librarian") {
+                                            "Librarian account created successfully!"
                                         } else {
-                                            val errorMsg = dbTask.exception?.message ?: "Failed to save user data"
-                                            Toast.makeText(this, "Error: $errorMsg", Toast.LENGTH_SHORT).show()
+                                            "Member account created successfully!"
                                         }
+                                        Toast.makeText(this, successMessage, Toast.LENGTH_LONG).show()
+
+                                        // Navigate based on role
+                                        if (selectedRole == "librarian") {
+                                            navigateToLibrarianDashboard()
+                                        } else {
+                                            navigateToMemberDashboard()
+                                        }
+
                                     } catch (e: Exception) {
                                         showLoading(false)
-                                        Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(this, "Navigation error", Toast.LENGTH_SHORT).show()
                                     }
                                 }
                                 .addOnFailureListener { e ->
                                     try {
                                         showLoading(false)
-                                        Toast.makeText(this, "Firestore error: ${e.message}", Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(this, "Failed to save user data: ${e.message}", Toast.LENGTH_LONG).show()
+
+                                        // Even if Firestore fails, user is created in Auth
+                                        // Log the user out to prevent inconsistency
+                                        auth.signOut()
                                     } catch (ex: Exception) {
                                         // Ignore
                                     }
@@ -280,7 +326,22 @@ class SignupActivity : AppCompatActivity() {
                         } else {
                             showLoading(false)
                             val errorMsg = task.exception?.message ?: "Signup failed"
-                            Toast.makeText(this, errorMsg, Toast.LENGTH_LONG).show()
+
+                            // Handle specific Firebase errors
+                            when {
+                                errorMsg.contains("email", ignoreCase = true) &&
+                                        errorMsg.contains("already", ignoreCase = true) -> {
+                                    emailInput.error = "Email already registered"
+                                    emailInput.requestFocus()
+                                }
+                                errorMsg.contains("weak", ignoreCase = true) -> {
+                                    passwordInput.error = "Password is too weak"
+                                    passwordInput.requestFocus()
+                                }
+                                else -> {
+                                    Toast.makeText(this, errorMsg, Toast.LENGTH_LONG).show()
+                                }
+                            }
                         }
                     } catch (e: Exception) {
                         showLoading(false)
@@ -301,6 +362,71 @@ class SignupActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Navigate to Member Dashboard
+     */
+    private fun navigateToMemberDashboard() {
+        try {
+            val intent = Intent(this, MemberDashboardActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            finish()
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+        } catch (e: Exception) {
+            android.util.Log.e("SignupActivity", "Navigation to member dashboard failed: ${e.message}")
+            Toast.makeText(this, "Navigation error", Toast.LENGTH_SHORT).show()
+            finish()
+        }
+    }
+
+    /**
+     * Navigate to Librarian Dashboard
+     */
+    private fun navigateToLibrarianDashboard() {
+        try {
+            val intent = Intent(this, LibrarianDashboardActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            finish()
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+        } catch (e: Exception) {
+            android.util.Log.e("SignupActivity", "Navigation to librarian dashboard failed: ${e.message}")
+
+            // Fallback to member dashboard
+            Toast.makeText(this, "Error accessing librarian panel. Using member view.", Toast.LENGTH_SHORT).show()
+            navigateToMemberDashboard()
+        }
+    }
+
+    /**
+     * Navigate based on role (if already logged in)
+     */
+    private fun navigateBasedOnRole() {
+        try {
+            val userId = auth.currentUser?.uid ?: return
+
+            db.collection("users").document(userId)
+                .get()
+                .addOnSuccessListener { document ->
+                    if (document.exists()) {
+                        val user = document.toObject(User::class.java)
+                        if (user?.role == "librarian") {
+                            navigateToLibrarianDashboard()
+                        } else {
+                            navigateToMemberDashboard()
+                        }
+                    } else {
+                        navigateToMemberDashboard()
+                    }
+                }
+                .addOnFailureListener {
+                    navigateToMemberDashboard()
+                }
+        } catch (e: Exception) {
+            navigateToMemberDashboard()
+        }
+    }
+
     private fun showLoading(isLoading: Boolean) {
         try {
             if (isLoading) {
@@ -311,6 +437,11 @@ class SignupActivity : AppCompatActivity() {
                 loginLink.alpha = 0.5f
                 roleSpinner.isEnabled = false
                 roleSpinner.alpha = 0.5f
+                nameInput.isEnabled = false
+                emailInput.isEnabled = false
+                passwordInput.isEnabled = false
+                confirmPasswordInput.isEnabled = false
+                adminCodeInput.isEnabled = false
             } else {
                 progressBar.visibility = View.GONE
                 signupButton.isEnabled = true
@@ -319,9 +450,26 @@ class SignupActivity : AppCompatActivity() {
                 loginLink.alpha = 1.0f
                 roleSpinner.isEnabled = true
                 roleSpinner.alpha = 1.0f
+                nameInput.isEnabled = true
+                emailInput.isEnabled = true
+                passwordInput.isEnabled = true
+                confirmPasswordInput.isEnabled = true
+                adminCodeInput.isEnabled = true
             }
         } catch (e: Exception) {
             // Ignore UI errors during loading state
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        // Check if user is already signed in when activity starts
+        try {
+            if (auth.currentUser != null) {
+                navigateBasedOnRole()
+            }
+        } catch (e: Exception) {
+            android.util.Log.e("SignupActivity", "Error in onStart: ${e.message}")
         }
     }
 }
