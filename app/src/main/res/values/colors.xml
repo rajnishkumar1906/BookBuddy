@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- ========== PRIMARY PURPLE PALETTE ========== -->
+    <color name="purple_100">#FFE1BEE7</color>
+    <color name="purple_200">#FFCE93D8</color>
+    <color name="purple_300">#FFBA68C8</color>  <!-- For night mode -->
+    <color name="purple_400">#FFAB47BC</color>
+    <color name="purple_500">#FF9C27B0</color>  <!-- Main brand color -->
+    <color name="purple_600">#FF8E24AA</color>
+    <color name="purple_700">#FF7B1FA2</color>  <!-- Dark variant -->
+    <color name="purple_800">#FF6A1B9A</color>
+    <color name="purple_900">#FF4A148C</color>
+
+    <!-- ========== TEAL/SECONDARY PALETTE ========== -->
+    <color name="teal_100">#FFB2DFDB</color>
+    <color name="teal_200">#FF80CBC4</color>
+    <color name="teal_300">#FF4DB6AC</color>    <!-- For night mode -->
+    <color name="teal_400">#FF26A69A</color>
+    <color name="teal_500">#FF009688</color>
+    <color name="teal_600">#FF00897B</color>
+    <color name="teal_700">#FF00796B</color>    <!-- Dark variant -->
+    <color name="teal_800">#FF00695C</color>
+    <color name="teal_900">#FF004D40</color>
+
+    <!-- ========== BASIC COLORS ========== -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="transparent">#00000000</color>
+
+    <!-- ========== GRAY SCALE ========== -->
+    <color name="gray_50">#FFFAFAFA</color>
+    <color name="gray_100">#FFF5F5F5</color>
+    <color name="gray_200">#FFEEEEEE</color>
+    <color name="gray_300">#FFE0E0E0</color>
+    <color name="gray_400">#FFBDBDBD</color>
+    <color name="gray_500">#FF9E9E9E</color>
+    <color name="gray_600">#FF757575</color>
+    <color name="gray_700">#FF616161</color>
+    <color name="gray_800">#FF424242</color>
+    <color name="gray_900">#FF212121</color>
+
+    <!-- Common gray aliases -->
+    <color name="light_gray">@color/gray_100</color>
+    <color name="gray">@color/gray_600</color>
+    <color name="dark_gray">@color/gray_800</color>
+
+    <!-- ========== 🌙 DARK MODE COLORS ========== -->
+    <!-- Dark Surface Colors -->
+    <color name="dark_surface">#FF1E1E1E</color>        <!-- Surface color for cards, dialogs in dark mode -->
+    <color name="dark_surface_elevated">#FF2D2D2D</color> <!-- Elevated surfaces (higher than surface) -->
+    <color name="dark_card_background">#FF2D2D2D</color>   <!-- Card background in dark mode -->
+
+    <!-- Dark Background Colors -->
+    <color name="dark_background">#FF121212</color>      <!-- Main app background in dark mode -->
+    <color name="dark_background_secondary">#FF1A1A1A</color> <!-- Secondary background -->
+
+    <!-- Dark Status Bar Colors -->
+    <color name="dark_status_bar">#FF000000</color>       <!-- Status bar in dark mode (pure black) -->
+    <color name="dark_status_bar_semi">#CC000000</color>  <!-- Semi-transparent status bar -->
+
+    <!-- Dark Navigation Bar Colors -->
+    <color name="dark_nav_bar">#FF1E1E1E</color>          <!-- Navigation bar in dark mode -->
+    <color name="dark_nav_bar_translucent">#CC1E1E1E</color> <!-- Translucent nav bar -->
+
+    <!-- Dark Text Colors -->
+    <color name="text_primary_dark">@color/gray_50</color>     <!-- Primary text in dark mode -->
+    <color name="text_secondary_dark">@color/gray_400</color>  <!-- Secondary text in dark mode -->
+    <color name="text_hint_dark">@color/gray_500</color>       <!-- Hint text in dark mode -->
+    <color name="text_disabled_dark">@color/gray_600</color>   <!-- Disabled text in dark mode -->
+
+    <!-- Dark Icon Colors -->
+    <color name="icon_primary_dark">#FFFFFFFF</color>      <!-- Primary icons in dark mode -->
+    <color name="icon_secondary_dark">#B3FFFFFF</color>    <!-- Secondary icons in dark mode -->
+
+    <!-- Dark Input Background -->
+    <color name="dark_input_background">#FF2D2D2D</color>  <!-- Input fields in dark mode -->
+    <color name="dark_input_stroke">#FF616161</color>      <!-- Input borders in dark mode -->
+
+    <!-- ========== LIGHT MODE COLORS ========== -->
+    <color name="light_surface">@color/white</color>
+    <color name="light_background">@color/gray_50</color>
+    <color name="light_status_bar">@color/purple_700</color>
+    <color name="light_nav_bar">@color/purple_500</color>
+
+    <!-- ========== BACKGROUND & SURFACE ALIASES ========== -->
+    <color name="background_light">@color/light_background</color>
+    <color name="background_dark">@color/dark_background</color>
+    <color name="surface_light">@color/light_surface</color>
+    <color name="surface_dark">@color/dark_surface</color>
+    <color name="card_background">@color/white</color>
+    <color name="card_background_dark">@color/dark_card_background</color>
+
+    <!-- ========== STATUS COLORS ========== -->
+    <color name="success">#FF4CAF50</color>
+    <color name="success_light">#FFC8E6C9</color>
+    <color name="success_dark">#FF2E7D32</color>
+
+    <color name="error">#FFF44336</color>
+    <color name="error_light">#FFFFCDD2</color>
+    <color name="error_dark">#FFB71C1C</color>
+
+    <color name="warning">#FFFFC107</color>
+    <color name="warning_light">#FFFFECB3</color>
+    <color name="warning_dark">#FFFF6F00</color>
+
+    <color name="info">#FF2196F3</color>
+    <color name="info_light">#FFBBDEFB</color>
+    <color name="info_dark">#FF0D47A1</color>
+
+    <!-- ========== DIVIDER & OVERLAY ========== -->
+    <color name="divider">#1F000000</color>
+    <color name="divider_dark">#1FFFFFFF</color>  <!-- 👈 SINGLE DEFINITION - NO DUPLICATE -->
+
+    <color name="overlay_light">#80FFFFFF</color>
+    <color name="overlay_dark">#80000000</color>
+
+    <!-- ========== AVAILABILITY INDICATORS ========== -->
+    <color name="available">@color/success</color>
+    <color name="borrowed">@color/warning</color>
+    <color name="unavailable">@color/error</color>
+    <color name="overdue">#FFFF5722</color>
+
+    <!-- ========== BOOK CATEGORY COLORS ========== -->
+    <color name="category_fiction">#FF42A5F5</color>
+    <color name="category_nonfiction">#FF66BB6A</color>
+    <color name="category_fantasy">#FFFFA726</color>
+    <color name="category_sci_fi">#FF29B6F6</color>
+    <color name="category_romance">#FFEF5350</color>
+    <color name="category_mystery">#FFAB47BC</color>
+    <color name="category_biography">#FFFF7043</color>
+    <color name="category_history">#FF78909C</color>
+</resources>

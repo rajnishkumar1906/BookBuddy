@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "688591248349",
+    "project_id": "gaonshield",
+    "storage_bucket": "gaonshield.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:688591248349:android:3e51ad4c9780825320f434",
+        "android_client_info": {
+          "package_name": "com.example.bookbuddy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBh5o9wpCanJil3bQCOoHB5FENhIpavvAY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:688591248349:android:d52b2864c3077df420f434",
+        "android_client_info": {
+          "package_name": "com.example.gaonshield"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBh5o9wpCanJil3bQCOoHB5FENhIpavvAY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

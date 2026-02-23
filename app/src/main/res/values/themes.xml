@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme -->
+    <style name="Base.Theme.BookBuddy" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Primary colors -->
+        <item name="colorPrimary">@color/purple_500</item>
+        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorOnPrimary">@color/white</item>
+
+        <!-- Secondary colors -->
+        <item name="colorSecondary">@color/teal_200</item>
+        <item name="colorSecondaryVariant">@color/teal_700</item>
+        <item name="colorOnSecondary">@color/black</item>
+
+        <!-- Surface colors -->
+        <item name="colorSurface">@color/white</item>
+        <item name="colorOnSurface">@color/black</item>
+
+        <!-- Background colors -->
+        <item name="android:colorBackground">@color/white</item>
+        <item name="colorOnBackground">@color/black</item>
+
+        <!-- Status bar color -->
+        <item name="android:statusBarColor" tools:targetApi="l">@color/purple_700</item>
+
+        <!-- Navigation bar color -->
+        <item name="android:navigationBarColor" tools:targetApi="l">@color/purple_500</item>
+    </style>
+
+    <!-- Main app theme -->
+    <style name="Theme.BookBuddy" parent="Base.Theme.BookBuddy">
+        <!-- Typography -->
+        <item name="textAppearanceHeadline1">@style/TextAppearance.BookBuddy.Headline1</item>
+        <item name="textAppearanceHeadline2">@style/TextAppearance.BookBuddy.Headline2</item>
+        <item name="textAppearanceHeadline3">@style/TextAppearance.BookBuddy.Headline3</item>
+        <item name="textAppearanceBody1">@style/TextAppearance.BookBuddy.Body1</item>
+        <item name="textAppearanceBody2">@style/TextAppearance.BookBuddy.Body2</item>
+    </style>
+
+    <!-- TextAppearance styles -->
+    <style name="TextAppearance.BookBuddy.Headline1" parent="TextAppearance.Material3.HeadlineLarge">
+        <item name="android:textSize">32sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/purple_500</item>
+    </style>
+
+    <style name="TextAppearance.BookBuddy.Headline2" parent="TextAppearance.Material3.HeadlineMedium">
+        <item name="android:textSize">24sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/purple_500</item>
+    </style>
+
+    <style name="TextAppearance.BookBuddy.Headline3" parent="TextAppearance.Material3.HeadlineSmall">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/purple_500</item>
+    </style>
+
+    <style name="TextAppearance.BookBuddy.Body1" parent="TextAppearance.Material3.BodyLarge">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">@color/black</item>
+    </style>
+
+    <style name="TextAppearance.BookBuddy.Body2" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/gray</item>
+    </style>
+
+    <!-- Splash Screen Theme -->
+    <style name="Theme.BookBuddy.Splash" parent="Theme.BookBuddy">
+        <item name="android:windowBackground">@color/purple_500</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:statusBarColor">@color/purple_700</item>
+        <item name="android:navigationBarColor">@color/purple_500</item>
+    </style>
+
+    <!-- Button Style -->
+    <style name="Widget.BookBuddy.Button" parent="Widget.Material3.Button">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="cornerRadius">8dp</item>
+    </style>
+
+    <!-- 👇 FIXED: CardView Style - Using correct parent -->
+    <style name="Widget.BookBuddy.Card" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardCornerRadius">12dp</item>
+        <item name="cardElevation">4dp</item>
+    </style>
+</resources>

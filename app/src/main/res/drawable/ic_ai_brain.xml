@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Brain Shape -->
+    <path
+        android:fillColor="#FF6200EE"
+        android:pathData="M12,2 C8.13,2 5,5.13 5,9c0,1.47 0.51,2.83 1.35,3.92 C5.5,13.72 5,14.82 5,16c0,2.21 1.79,4 4,4 0.62,0 1.21,-0.14 1.74,-0.39 C11.5,20.47 12.71,21 14,21c2.21,0 4,-1.79 4,-4 0,-0.45 -0.07,-0.88 -0.21,-1.29 C19.17,14.99 20,13.61 20,12c0,-2.21 -1.79,-4 -4,-4 -0.41,0 -0.8,0.06 -1.17,0.18 C14.31,6.89 13.24,6 12,6z"/>
+
+    <!-- Connection Lines -->
+    <path
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="1.5"
+        android:pathData="M9,10 L11,14 M13,10 L15,14 M10,12 L14,12"/>
+</vector>

@@ -1,0 +1,44 @@
+<resources>
+    <string name="app_name">BookBuddy</string>
+
+    <!-- Common -->
+    <string name="loading">Loading...</string>
+    <string name="error">Error</string>
+    <string name="success">Success</string>
+    <string name="cancel">Cancel</string>
+    <string name="save">Save</string>
+
+    <!-- Navigation -->
+    <string name="menu_home">Home</string>
+    <string name="menu_search">Search</string>
+    <string name="menu_my_books">My Books</string>
+    <string name="menu_profile">Profile</string>
+    <string name="menu_logout">Logout</string>
+    <string name="menu_add_book">Add Book</string>
+
+    <!-- Book List -->
+    <string name="books_available">Available: %1$d/%2$d</string>
+    <string name="no_books">No books found</string>
+    <string name="search_hint">Search by title, author, or genre...</string>
+
+    <!-- Book Details -->
+    <string name="book_details">Book Details</string>
+    <string name="by_author">By %1$s</string>
+    <string name="genre">Genre: %1$s</string>
+    <string name="isbn">ISBN: %1$s</string>
+    <string name="description">Description</string>
+    <string name="summary">Summary</string>
+    <string name="borrow_book">Borrow Book</string>
+    <string name="return_book">Return Book</string>
+    <string name="not_available">Currently Not Available</string>
+
+    <!-- Add Book -->
+    <string name="add_new_book">Add New Book</string>
+    <string name="book_title">Book Title</string>
+    <string name="book_author">Author</string>
+    <string name="book_genre">Genre</string>
+    <string name="book_isbn">ISBN (Optional)</string>
+    <string name="book_description">Description</string>
+    <string name="number_of_copies">Number of Copies</string>
+    <string name="add_book">Add Book</string>
+</resources>
