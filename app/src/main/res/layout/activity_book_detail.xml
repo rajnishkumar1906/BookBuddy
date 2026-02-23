@@ -4,69 +4,35 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    android:fillViewport="true"
-    android:padding="0dp">
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="16dp">
 
-        <!-- Header with Back Button -->
+        <Button
+            android:id="@+id/backButton"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:text="← Back"
+            android:textColor="@color/peacock_green"
+            android:backgroundTint="@color/white"
+            android:stateListAnimator="@null"
+            android:layout_marginBottom="16dp"/>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:padding="16dp"
-            android:background="@color/purple_500">
+            android:gravity="center"
+            android:layout_marginBottom="24dp">
 
-            <Button
-                android:id="@+id/backButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="← Back"
-                android:textColor="@color/white"
-                android:backgroundTint="@android:color/transparent"
-                android:textSize="16sp"/>
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Book Details"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="@color/white"
-                android:gravity="center"/>
-
-            <View
-                android:layout_width="48dp"
-                android:layout_height="wrap_content"/>
-        </LinearLayout>
-
-        <!-- Content -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="20dp">
-
-            <!-- Progress Bar -->
-            <ProgressBar
-                android:id="@+id/progressBar"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_gravity="center"
-                android:layout_margin="20dp"
-                android:visibility="gone"/>
-
-            <!-- 👇 NEW: Book Cover Image Section -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center_horizontal"
-                android:layout_marginBottom="20dp">
+            <FrameLayout
+                android:layout_width="150dp"
+                android:layout_height="200dp"
+                android:layout_marginEnd="16dp">
 
                 <ImageView
                     android:id="@+id/bookCover"
@@ -77,157 +43,204 @@
 
                 <TextView
                     android:id="@+id/noImageText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="No cover image available"
-                    android:textSize="14sp"
-                    android:textColor="@android:color/darker_gray"
-                    android:visibility="gone"
-                    android:layout_marginTop="8dp"/>
-            </LinearLayout>
+                    android:layout_width="150dp"
+                    android:layout_height="200dp"
+                    android:text="No cover"
+                    android:gravity="center"
+                    android:background="@color/light_gray"
+                    android:textColor="@color/gray"
+                    android:visibility="gone"/>
+            </FrameLayout>
 
-            <!-- Book Title -->
-            <TextView
-                android:id="@+id/bookTitle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="28sp"
-                android:textStyle="bold"
-                android:textColor="@color/purple_500"
-                android:layout_marginBottom="8dp"/>
-
-            <!-- Author -->
-            <TextView
-                android:id="@+id/bookAuthor"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="18sp"
-                android:textColor="@android:color/black"
-                android:layout_marginBottom="16dp"/>
-
-            <!-- Divider -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@android:color/darker_gray"
-                android:layout_marginBottom="16dp"/>
-
-            <!-- Genre -->
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="12dp">
+                android:layout_weight="1"
+                android:orientation="vertical">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:id="@+id/bookTitle"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Genre:"
-                    android:textSize="16sp"
+                    android:textSize="24sp"
                     android:textStyle="bold"
-                    android:textColor="@android:color/black"
-                    android:layout_marginEnd="8dp"/>
+                    android:textColor="@color/black"
+                    android:layout_marginBottom="4dp"/>
+
+                <TextView
+                    android:id="@+id/bookAuthor"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="18sp"
+                    android:textColor="@color/gray"
+                    android:layout_marginBottom="8dp"/>
 
                 <TextView
                     android:id="@+id/bookGenre"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    android:textColor="@android:color/black"/>
-            </LinearLayout>
-
-            <!-- Availability -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="20dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Availability:"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="@android:color/black"
-                    android:layout_marginEnd="8dp"/>
+                    android:textSize="14sp"
+                    android:textColor="@color/peacock_green"
+                    android:background="@color/peacock_green_soft"
+                    android:padding="4dp"
+                    android:layout_marginBottom="8dp"/>
 
                 <TextView
                     android:id="@+id/bookAvailability"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
-                    android:textColor="@color/purple_500"/>
+                    android:textStyle="bold"
+                    android:layout_marginBottom="4dp"/>
             </LinearLayout>
-
-            <!-- Description Section -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Description"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="@color/purple_500"
-                android:layout_marginBottom="8dp"/>
-
-            <TextView
-                android:id="@+id/bookDescription"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="16sp"
-                android:textColor="@android:color/black"
-                android:lineSpacingExtra="4dp"
-                android:layout_marginBottom="20dp"/>
-
-            <!-- Summary Section -->
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Summary"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="@color/purple_500"
-                android:layout_marginBottom="8dp"/>
-
-            <TextView
-                android:id="@+id/bookSummary"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="16sp"
-                android:textColor="@android:color/black"
-                android:lineSpacingExtra="4dp"
-                android:background="@android:color/white"
-                android:padding="12dp"
-                android:layout_marginBottom="24dp"/>
-
-            <!-- Borrow Button -->
-            <Button
-                android:id="@+id/borrowButton"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:text="Borrow This Book"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:backgroundTint="@color/purple_500"
-                app:cornerRadius="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"
-                android:visibility="gone"/>
-
-            <!-- Return Button -->
-            <Button
-                android:id="@+id/returnButton"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:text="Return This Book"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:backgroundTint="@color/teal_700"
-                app:cornerRadius="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="20dp"
-                android:visibility="gone"/>
-
         </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Description"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/peacock_green"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:id="@+id/bookDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Summary"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/peacock_green"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:id="@+id/bookSummary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Details"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/peacock_green"
+            android:layout_marginBottom="8dp"/>
+
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnCount="2"
+            android:rowCount="4"
+            android:layout_marginBottom="24dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:text="ISBN:"
+                android:textColor="@color/gray"
+                android:padding="4dp"/>
+
+            <TextView
+                android:id="@+id/bookIsbn"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="2"
+                android:textColor="@color/black"
+                android:padding="4dp"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:text="Publisher:"
+                android:textColor="@color/gray"
+                android:padding="4dp"/>
+
+            <TextView
+                android:id="@+id/bookPublisher"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="2"
+                android:textColor="@color/black"
+                android:padding="4dp"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:text="Pages:"
+                android:textColor="@color/gray"
+                android:padding="4dp"/>
+
+            <TextView
+                android:id="@+id/bookPages"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="2"
+                android:textColor="@color/black"
+                android:padding="4dp"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1"
+                android:text="Language:"
+                android:textColor="@color/gray"
+                android:padding="4dp"/>
+
+            <TextView
+                android:id="@+id/bookLanguage"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="2"
+                android:textColor="@color/black"
+                android:padding="4dp"/>
+        </GridLayout>
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            android:layout_marginBottom="16dp"
+            android:visibility="gone"
+            android:indeterminateTint="@color/peacock_green"/>
+
+        <Button
+            android:id="@+id/borrowButton"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:text="Borrow Book"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/peacock_green"
+            android:layout_marginBottom="8dp"/>
+
+        <Button
+            android:id="@+id/returnButton"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:text="Return Book"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/warning"
+            android:layout_marginBottom="8dp"
+            android:visibility="gone"/>
+
     </LinearLayout>
 </ScrollView>

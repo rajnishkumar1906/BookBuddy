@@ -6,7 +6,10 @@
     <uses-permission android:name="android.permission.CAMERA" /> <!-- Hardware Features (Optional) -->
     <uses-feature
         android:name="android.hardware.camera"
-        android:required="false" />
+        android:required="false" /> <!-- For reading storage (Android 12 and below) -->
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
 
     <application
         android:allowBackup="true"
@@ -16,9 +19,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BookBuddy">
         <activity
-            android:name=".activities.MemberDashboardActivity"
+            android:name=".activities.ManageBooksActivity"
             android:exported="false" />
-        <!-- Splash Activity (LAUNCHER) -->
+        <activity
+            android:name=".activities.EditBookActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.MemberDashboardActivity"
+            android:exported="false" /> <!-- Splash Activity (LAUNCHER) -->
         <activity
             android:name=".activities.SplashActivity"
             android:exported="true"

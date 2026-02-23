@@ -75,7 +75,8 @@ firebaseMlVision = "24.1.0"
 firebaseInappmessagingDisplay = "22.0.2"
 firebaseMessaging = "25.0.1"
 glide = "4.16.0"
-playServicesVision = "20.1.3"   # ← ADDED: fixes the duplicate vision classes
+playServicesVision = "20.1.3"
+firebaseStorage = "22.0.1"   # ← ADDED: fixes the duplicate vision classes
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -96,7 +97,8 @@ firebase-ml-vision = { group = "com.google.firebase", name = "firebase-ml-vision
 firebase-inappmessaging-display = { group = "com.google.firebase", name = "firebase-inappmessaging-display", version.ref = "firebaseInappmessagingDisplay" }
 firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging", version.ref = "firebaseMessaging" }
 glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
-play-services-vision = { group = "com.google.android.gms", name = "play-services-vision", version.ref = "playServicesVision" }   # ← ADDED
+play-services-vision = { group = "com.google.android.gms", name = "play-services-vision", version.ref = "playServicesVision" }
+firebase-storage = { group = "com.google.firebase", name = "firebase-storage", version.ref = "firebaseStorage" }   # ← ADDED
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

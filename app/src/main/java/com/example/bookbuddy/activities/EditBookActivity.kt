@@ -15,6 +15,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.Glide
 import com.example.bookbuddy.R
 import com.example.bookbuddy.models.Book
 import com.example.bookbuddy.models.User
@@ -25,7 +26,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import java.util.UUID
 
-class AddBookActivity : AppCompatActivity() {
+class EditBookActivity : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
@@ -43,6 +44,7 @@ class AddBookActivity : AppCompatActivity() {
     private lateinit var languageInput: TextInputEditText
     private lateinit var publisherInput: TextInputEditText
     private lateinit var pageCountInput: TextInputEditText
+    private lateinit var availableCopiesInput: TextInputEditText
 
     private lateinit var coverUrlInput: TextInputEditText
     private lateinit var btnUploadImage: Button
@@ -50,13 +52,15 @@ class AddBookActivity : AppCompatActivity() {
     private lateinit var ivBookCover: ImageView
     private lateinit var tvImageStatus: TextView
 
-    private lateinit var addButton: Button
+    private lateinit var updateButton: Button
     private lateinit var progressBar: ProgressBar
     private lateinit var cancelButton: Button
 
+    private var bookId: String = ""
+    private var currentBook: Book? = null
     private var selectedImageUri: Uri? = null
-    private var isUploadingImage = false
     private var uploadedImageUrl: String = ""
+    private var isUploadingImage = false
 
     private val genres = arrayOf(
         "Fiction", "Non-Fiction", "Science Fiction", "Fantasy",
@@ -70,10 +74,9 @@ class AddBookActivity : AppCompatActivity() {
             selectedImageUri = it
             ivBookCover.setImageURI(it)
             ivBookCover.visibility = View.VISIBLE
-            tvImageStatus.text = getString(R.string.image_selected)
+            tvImageStatus.text = "✅ Image selected"
             tvImageStatus.visibility = View.VISIBLE
             coverUrlInput.setText("")
-            coverUrlInput.visibility = View.GONE
         }
     }
 
@@ -82,33 +85,36 @@ class AddBookActivity : AppCompatActivity() {
             selectedImageUri = null
             ivBookCover.setImageBitmap(it)
             ivBookCover.visibility = View.VISIBLE
-            tvImageStatus.text = getString(R.string.photo_taken)
+            tvImageStatus.text = "✅ Photo taken"
             tvImageStatus.visibility = View.VISIBLE
             coverUrlInput.setText("")
-            coverUrlInput.visibility = View.GONE
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_add_book)
+        setContentView(R.layout.activity_edit_book)
 
         auth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
         storage = FirebaseStorage.getInstance()
         storageRef = storage.reference
 
+        bookId = intent.getStringExtra("bookId") ?: run {
+            Toast.makeText(this, "Book ID not found", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
+
         if (auth.currentUser == null) {
-            Toast.makeText(this, R.string.login_required, Toast.LENGTH_SHORT).show()
-            startActivity(Intent(this, LoginActivity::class.java))
             finish()
             return
         }
 
         initializeViews()
-        verifyLibrarianAccess()
         setupGenreSpinner()
         setClickListeners()
+        loadBookDetails()
     }
 
     private fun initializeViews() {
@@ -120,6 +126,7 @@ class AddBookActivity : AppCompatActivity() {
         summaryInput = findViewById(R.id.summaryInput)
         isbnInput = findViewById(R.id.isbnInput)
         copiesInput = findViewById(R.id.copiesInput)
+        availableCopiesInput = findViewById(R.id.availableCopiesInput)
         languageInput = findViewById(R.id.languageInput)
         publisherInput = findViewById(R.id.publisherInput)
         pageCountInput = findViewById(R.id.pageCountInput)
@@ -130,16 +137,11 @@ class AddBookActivity : AppCompatActivity() {
         ivBookCover = findViewById(R.id.ivBookCover)
         tvImageStatus = findViewById(R.id.tvImageStatus)
 
-        addButton = findViewById(R.id.addButton)
+        updateButton = findViewById(R.id.updateButton)
         progressBar = findViewById(R.id.progressBar)
         cancelButton = findViewById(R.id.cancelButton)
 
-        copiesInput.setText("1")
-        languageInput.setText("English")
-
         customGenreInput.visibility = View.GONE
-        ivBookCover.visibility = View.GONE
-        tvImageStatus.visibility = View.GONE
     }
 
     private fun setupGenreSpinner() {
@@ -158,27 +160,6 @@ class AddBookActivity : AppCompatActivity() {
         }
     }
 
-    private fun verifyLibrarianAccess() {
-        showLoading(true)
-        val userId = auth.currentUser?.uid ?: return
-
-        db.collection("users").document(userId)
-            .get()
-            .addOnSuccessListener { document ->
-                showLoading(false)
-                val user = document.toObject(User::class.java)
-                if (user?.role != "librarian") {
-                    Toast.makeText(this, R.string.add_book_access_denied, Toast.LENGTH_LONG).show()
-                    finish()
-                }
-            }
-            .addOnFailureListener {
-                showLoading(false)
-                Toast.makeText(this, R.string.error_verifying_access, Toast.LENGTH_SHORT).show()
-                finish()
-            }
-    }
-
     private fun setClickListeners() {
         btnUploadImage.setOnClickListener {
             pickImageLauncher.launch("image/*")
@@ -188,8 +169,8 @@ class AddBookActivity : AppCompatActivity() {
             takePhotoLauncher.launch(null)
         }
 
-        addButton.setOnClickListener {
-            addBook()
+        updateButton.setOnClickListener {
+            updateBook()
         }
 
         cancelButton.setOnClickListener {
@@ -197,7 +178,69 @@ class AddBookActivity : AppCompatActivity() {
         }
     }
 
-    private fun addBook() {
+    private fun loadBookDetails() {
+        showLoading(true)
+
+        db.collection("books").document(bookId)
+            .get()
+            .addOnSuccessListener { document ->
+                showLoading(false)
+
+                if (!document.exists()) {
+                    Toast.makeText(this, "Book not found", Toast.LENGTH_SHORT).show()
+                    finish()
+                    return@addOnSuccessListener
+                }
+
+                currentBook = document.toObject(Book::class.java)
+                currentBook?.id = document.id
+
+                displayBookDetails()
+            }
+            .addOnFailureListener {
+                showLoading(false)
+                Toast.makeText(this, "Error loading book", Toast.LENGTH_SHORT).show()
+                finish()
+            }
+    }
+
+    private fun displayBookDetails() {
+        currentBook?.let { book ->
+            titleInput.setText(book.title)
+            authorInput.setText(book.author)
+            descriptionInput.setText(book.description)
+            summaryInput.setText(book.summary)
+            isbnInput.setText(book.isbn)
+            copiesInput.setText(book.totalCopies.toString())
+            availableCopiesInput.setText(book.availableCopies.toString())
+            languageInput.setText(book.language)
+            publisherInput.setText(book.publisher)
+            pageCountInput.setText(book.pageCount.toString())
+            coverUrlInput.setText(book.coverUrl)
+
+            // Set genre spinner
+            val genrePosition = genres.indexOfFirst { it.equals(book.genre, ignoreCase = true) }
+            if (genrePosition >= 0) {
+                genreSpinner.setSelection(genrePosition)
+            } else {
+                genreSpinner.setSelection(genres.size - 1) // Other
+                customGenreInput.setText(book.genre)
+                customGenreInput.visibility = View.VISIBLE
+            }
+
+            // Load cover image
+            if (book.coverUrl.isNotEmpty()) {
+                Glide.with(this)
+                    .load(book.coverUrl)
+                    .placeholder(R.drawable.ic_book_placeholder)
+                    .error(R.drawable.ic_book_error)
+                    .into(ivBookCover)
+                ivBookCover.visibility = View.VISIBLE
+            }
+        }
+    }
+
+    private fun updateBook() {
         val title = titleInput.text.toString().trim()
         val author = authorInput.text.toString().trim()
         val description = descriptionInput.text.toString().trim()
@@ -207,7 +250,8 @@ class AddBookActivity : AppCompatActivity() {
         val publisher = publisherInput.text.toString().trim()
         val coverUrl = coverUrlInput.text.toString().trim()
 
-        val copies = copiesInput.text.toString().toIntOrNull() ?: 1
+        val totalCopies = copiesInput.text.toString().toIntOrNull() ?: 1
+        val availableCopies = availableCopiesInput.text.toString().toIntOrNull() ?: totalCopies
         val pageCount = pageCountInput.text.toString().toIntOrNull() ?: 0
 
         val genre = if (genreSpinner.selectedItem.toString() == "Other") {
@@ -217,43 +261,35 @@ class AddBookActivity : AppCompatActivity() {
         }
 
         if (title.isEmpty()) {
-            titleInput.error = getString(R.string.error_title_required)
+            titleInput.error = "Title is required"
             titleInput.requestFocus()
             return
         }
 
         if (author.isEmpty()) {
-            authorInput.error = getString(R.string.error_author_required)
+            authorInput.error = "Author is required"
             authorInput.requestFocus()
             return
         }
 
         if (genre.isEmpty()) {
-            if (customGenreInput.visibility == View.VISIBLE) {
-                customGenreInput.error = getString(R.string.error_genre_required)
-                customGenreInput.requestFocus()
-            } else {
-                Toast.makeText(this, R.string.error_select_genre, Toast.LENGTH_SHORT).show()
-            }
+            Toast.makeText(this, "Genre is required", Toast.LENGTH_SHORT).show()
             return
         }
 
         if (selectedImageUri != null) {
-            uploadImageAndSaveBook(title, author, genre, description, summary, isbn, copies,
-                language, publisher, pageCount, coverUrl)
-        } else if (coverUrl.isNotEmpty()) {
-            saveBookToFirestore(title, author, genre, description, summary, isbn, copies,
-                language, publisher, pageCount, coverUrl)
+            uploadImageAndUpdateBook(title, author, genre, description, summary, isbn,
+                totalCopies, availableCopies, language, publisher, pageCount, coverUrl)
         } else {
-            saveBookToFirestore(title, author, genre, description, summary, isbn, copies,
-                language, publisher, pageCount, "")
+            saveUpdatedBook(title, author, genre, description, summary, isbn,
+                totalCopies, availableCopies, language, publisher, pageCount, coverUrl)
         }
     }
 
-    private fun uploadImageAndSaveBook(
+    private fun uploadImageAndUpdateBook(
         title: String, author: String, genre: String, description: String,
-        summary: String, isbn: String, copies: Int, language: String,
-        publisher: String, pageCount: Int, coverUrl: String
+        summary: String, isbn: String, totalCopies: Int, availableCopies: Int,
+        language: String, publisher: String, pageCount: Int, coverUrl: String
     ) {
         showLoading(true)
         isUploadingImage = true
@@ -264,29 +300,30 @@ class AddBookActivity : AppCompatActivity() {
             imageRef.putFile(uri)
                 .addOnProgressListener { taskSnapshot ->
                     val progress = (100.0 * taskSnapshot.bytesTransferred / taskSnapshot.totalByteCount).toInt()
-                    tvImageStatus.text = getString(R.string.uploading_progress, progress)
+                    tvImageStatus.text = "Uploading: $progress%"
                 }
                 .addOnSuccessListener {
                     imageRef.downloadUrl.addOnSuccessListener { downloadUri ->
                         uploadedImageUrl = downloadUri.toString()
-                        saveBookToFirestore(title, author, genre, description, summary, isbn,
-                            copies, language, publisher, pageCount, uploadedImageUrl)
+                        saveUpdatedBook(title, author, genre, description, summary, isbn,
+                            totalCopies, availableCopies, language, publisher, pageCount,
+                            uploadedImageUrl)
                     }
                 }
                 .addOnFailureListener { e ->
                     showLoading(false)
                     isUploadingImage = false
-                    Toast.makeText(this, getString(R.string.error_image_upload, e.message), Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, "Image upload failed: ${e.message}", Toast.LENGTH_LONG).show()
                 }
         }
     }
 
-    private fun saveBookToFirestore(
+    private fun saveUpdatedBook(
         title: String, author: String, genre: String, description: String,
-        summary: String, isbn: String, copies: Int, language: String,
-        publisher: String, pageCount: Int, coverUrl: String
+        summary: String, isbn: String, totalCopies: Int, availableCopies: Int,
+        language: String, publisher: String, pageCount: Int, coverUrl: String
     ) {
-        val book = Book(
+        val updatedBook = currentBook?.copy(
             title = title,
             author = author,
             genre = genre,
@@ -294,32 +331,32 @@ class AddBookActivity : AppCompatActivity() {
             summary = summary,
             isbn = isbn,
             coverUrl = coverUrl,
-            totalCopies = copies,
-            availableCopies = copies,
-            language = language.ifEmpty { "English" },
+            totalCopies = totalCopies,
+            availableCopies = availableCopies,
+            language = language,
             publisher = publisher,
             pageCount = pageCount,
-            addedBy = auth.currentUser?.uid ?: "",
-            addedAt = System.currentTimeMillis(),
-            timesBorrowed = 0,
-            rating = 0f,
             keywords = generateKeywords(title, author, genre, description)
         )
 
-        db.collection("books").add(book)
-            .addOnSuccessListener { documentReference ->
-                book.id = documentReference.id
-                documentReference.set(book)
+        if (updatedBook == null) {
+            showLoading(false)
+            Toast.makeText(this, "Error updating book", Toast.LENGTH_SHORT).show()
+            return
+        }
 
+        db.collection("books").document(bookId)
+            .set(updatedBook)
+            .addOnSuccessListener {
                 showLoading(false)
                 isUploadingImage = false
-                Toast.makeText(this, R.string.add_book_success, Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "✅ Book updated successfully!", Toast.LENGTH_SHORT).show()
                 finish()
             }
             .addOnFailureListener { e ->
                 showLoading(false)
                 isUploadingImage = false
-                Toast.makeText(this, getString(R.string.error_adding_book, e.message), Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Error updating: ${e.message}", Toast.LENGTH_LONG).show()
             }
     }
 
@@ -349,32 +386,16 @@ class AddBookActivity : AppCompatActivity() {
     private fun showLoading(isLoading: Boolean) {
         if (isLoading) {
             progressBar.visibility = View.VISIBLE
-            addButton.isEnabled = false
-            addButton.alpha = 0.5f
+            updateButton.isEnabled = false
+            updateButton.alpha = 0.5f
             cancelButton.isEnabled = false
             cancelButton.alpha = 0.5f
-            btnUploadImage.isEnabled = false
-            btnUploadImage.alpha = 0.5f
-            btnTakePhoto.isEnabled = false
-            btnTakePhoto.alpha = 0.5f
-            titleInput.isEnabled = false
-            authorInput.isEnabled = false
-            genreSpinner.isEnabled = false
-            descriptionInput.isEnabled = false
         } else {
             progressBar.visibility = View.GONE
-            addButton.isEnabled = true
-            addButton.alpha = 1.0f
+            updateButton.isEnabled = true
+            updateButton.alpha = 1.0f
             cancelButton.isEnabled = true
             cancelButton.alpha = 1.0f
-            btnUploadImage.isEnabled = true
-            btnUploadImage.alpha = 1.0f
-            btnTakePhoto.isEnabled = true
-            btnTakePhoto.alpha = 1.0f
-            titleInput.isEnabled = true
-            authorInput.isEnabled = true
-            genreSpinner.isEnabled = true
-            descriptionInput.isEnabled = true
         }
     }
 }

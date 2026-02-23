@@ -29,12 +29,14 @@ class LibrarianDashboardActivity : AppCompatActivity() {
     private lateinit var btnManageBooks: Button
     private lateinit var btnViewBorrowings: Button
     private lateinit var btnStats: Button
+    private lateinit var btnRefresh: Button
     private lateinit var progressBar: ProgressBar
     private lateinit var tvStats: TextView
     private lateinit var recyclerView: RecyclerView
     private lateinit var bookAdapter: BookAdapter
     private lateinit var welcomeText: TextView
-    private lateinit var btnRefresh: Button
+    private lateinit var quickActionsLabel: TextView
+    private lateinit var recentBooksLabel: TextView
 
     private val recentBooks = mutableListOf<Book>()
 
@@ -42,35 +44,18 @@ class LibrarianDashboardActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_librarian_dashboard)
 
-        // Initialize Firebase
-        try {
-            auth = FirebaseAuth.getInstance()
-            db = FirebaseFirestore.getInstance()
-        } catch (e: Exception) {
-            Toast.makeText(this, "Firebase initialization failed", Toast.LENGTH_LONG).show()
-            finish()
-            return
-        }
+        auth = FirebaseAuth.getInstance()
+        db = FirebaseFirestore.getInstance()
 
-        // Check if user is logged in
         if (auth.currentUser == null) {
             navigateToLogin()
             return
         }
 
-        // Initialize views
         initializeViews()
-
-        // Setup toolbar
         setupToolbar()
-
-        // Verify librarian access
         verifyLibrarianAccess()
-
-        // Setup click listeners
         setupClickListeners()
-
-        // Load data
         loadLibraryStats()
         loadRecentBooks()
     }
@@ -86,16 +71,17 @@ class LibrarianDashboardActivity : AppCompatActivity() {
         tvStats = findViewById(R.id.tvStats)
         recyclerView = findViewById(R.id.recyclerView)
         welcomeText = findViewById(R.id.welcomeText)
+        quickActionsLabel = findViewById(R.id.quickActionsLabel)
+        recentBooksLabel = findViewById(R.id.recentBooksLabel)
+
+        quickActionsLabel.text = getString(R.string.librarian_quick_actions)
+        recentBooksLabel.text = getString(R.string.librarian_recent_books)
 
         bookAdapter = BookAdapter(recentBooks) { book ->
-            try {
-                val intent = Intent(this, BookDetailActivity::class.java)
-                intent.putExtra("bookId", book.id)
-                intent.putExtra("source", "librarian")
-                startActivity(intent)
-            } catch (e: Exception) {
-                Toast.makeText(this, "Cannot open book details", Toast.LENGTH_SHORT).show()
-            }
+            val intent = Intent(this, BookDetailActivity::class.java)
+            intent.putExtra("bookId", book.id)
+            intent.putExtra("source", "librarian")
+            startActivity(intent)
         }
 
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -104,7 +90,7 @@ class LibrarianDashboardActivity : AppCompatActivity() {
 
     private fun setupToolbar() {
         setSupportActionBar(toolbar)
-        supportActionBar?.title = "BookBuddy - Librarian Panel"
+        supportActionBar?.title = getString(R.string.librarian_dashboard_title)
     }
 
     private fun verifyLibrarianAccess() {
@@ -120,24 +106,22 @@ class LibrarianDashboardActivity : AppCompatActivity() {
                 if (document.exists()) {
                     val user = document.toObject(User::class.java)
 
-                    // CRITICAL: If not librarian, redirect to member dashboard
                     if (user?.role != "librarian") {
-                        Toast.makeText(this, "Redirecting to Member Dashboard...", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, R.string.member_access_redirect, Toast.LENGTH_SHORT).show()
                         navigateToMemberDashboard()
                         return@addOnSuccessListener
                     }
 
-                    // Show welcome message for librarian
-                    welcomeText.text = "Welcome back, Librarian ${user.name}!"
+                    val welcomeMessage = getString(R.string.librarian_welcome, user?.name ?: "Librarian")
+                    welcomeText.text = welcomeMessage
                     welcomeText.visibility = View.VISIBLE
                 } else {
-                    // If document doesn't exist, create it as member
                     createUserDocument(userId)
                 }
             }
             .addOnFailureListener {
                 showLoading(false)
-                Toast.makeText(this, "Error verifying access", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, R.string.error_loading_data, Toast.LENGTH_SHORT).show()
                 navigateToLogin()
             }
     }
@@ -147,13 +131,13 @@ class LibrarianDashboardActivity : AppCompatActivity() {
             id = userId,
             name = auth.currentUser?.displayName ?: "User",
             email = auth.currentUser?.email ?: "",
-            role = "member"  // Default to member for safety
+            role = "member"
         )
 
         db.collection("users").document(userId)
             .set(user)
             .addOnSuccessListener {
-                Toast.makeText(this, "Please sign in again", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, R.string.error_permission_denied, Toast.LENGTH_SHORT).show()
                 logoutUser()
             }
     }
@@ -164,13 +148,11 @@ class LibrarianDashboardActivity : AppCompatActivity() {
         }
 
         btnManageBooks.setOnClickListener {
-            // You'll create this activity later
-            Toast.makeText(this, "Manage Books - Coming Soon", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, R.string.coming_soon, Toast.LENGTH_SHORT).show()
         }
 
         btnViewBorrowings.setOnClickListener {
-            // You'll create this activity later
-            Toast.makeText(this, "View Borrowings - Coming Soon", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, R.string.coming_soon, Toast.LENGTH_SHORT).show()
         }
 
         btnStats.setOnClickListener {
@@ -180,7 +162,7 @@ class LibrarianDashboardActivity : AppCompatActivity() {
         btnRefresh.setOnClickListener {
             loadLibraryStats()
             loadRecentBooks()
-            Toast.makeText(this, "Dashboard Refreshed", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, R.string.librarian_refreshed, Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -198,26 +180,27 @@ class LibrarianDashboardActivity : AppCompatActivity() {
                     totalCopies += total
                 }
 
-                // Get active borrowings
                 db.collection("borrowRecords")
                     .whereEqualTo("returnedAt", null)
                     .get()
                     .addOnSuccessListener { borrowSnapshot ->
                         val borrowedCount = borrowSnapshot.size()
 
-                        tvStats.text = """
-                            📊 LIBRARY STATISTICS
+                        val statsText = """
+                            ${getString(R.string.librarian_stats_title)}
                             ════════════════════
-                            📚 Total Books: $totalBooks
-                            📖 Total Copies: $totalCopies
-                            ✅ Available: $availableCopies
-                            📌 Currently Borrowed: $borrowedCount
+                            ${getString(R.string.librarian_stats_total_books, totalBooks)}
+                            ${getString(R.string.librarian_stats_total_copies, totalCopies)}
+                            ${getString(R.string.librarian_stats_available, availableCopies)}
+                            ${getString(R.string.librarian_stats_borrowed, borrowedCount)}
                             ════════════════════
                         """.trimIndent()
+
+                        tvStats.text = statsText
                     }
             }
             .addOnFailureListener {
-                tvStats.text = "Failed to load statistics"
+                tvStats.text = getString(R.string.librarian_stats_failed)
             }
     }
 
@@ -234,7 +217,6 @@ class LibrarianDashboardActivity : AppCompatActivity() {
                         book.id = document.id
                         recentBooks.add(book)
                     } catch (e: Exception) {
-                        // Skip invalid book
                     }
                 }
                 bookAdapter.updateList(recentBooks)
@@ -251,7 +233,7 @@ class LibrarianDashboardActivity : AppCompatActivity() {
             R.id.action_refresh -> {
                 loadLibraryStats()
                 loadRecentBooks()
-                Toast.makeText(this, "Refreshed", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, R.string.librarian_refreshed, Toast.LENGTH_SHORT).show()
                 true
             }
             R.id.action_logout -> {
@@ -264,7 +246,7 @@ class LibrarianDashboardActivity : AppCompatActivity() {
 
     private fun logoutUser() {
         auth.signOut()
-        Toast.makeText(this, "Logged out successfully", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, R.string.logout_success, Toast.LENGTH_SHORT).show()
         navigateToLogin()
     }
 

@@ -15,7 +15,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/add_book_title"
+            android:text="Edit Book"
             android:textSize="24sp"
             android:textStyle="bold"
             android:textColor="@color/peacock_green"
@@ -34,7 +34,7 @@
                 android:id="@+id/titleInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/add_book_title_hint"
+                android:hint="Book Title"
                 android:inputType="text"
                 android:padding="12dp"
                 android:textSize="16sp"/>
@@ -52,7 +52,7 @@
                 android:id="@+id/authorInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/add_book_author_hint"
+                android:hint="Author Name"
                 android:inputType="text"
                 android:padding="12dp"
                 android:textSize="16sp"/>
@@ -61,7 +61,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/add_book_genre_label"
+            android:text="Genre"
             android:textSize="14sp"
             android:textColor="@color/peacock_green_dark"
             android:layout_marginBottom="4dp"/>
@@ -87,7 +87,7 @@
                 android:id="@+id/customGenreInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/add_book_custom_genre_hint"
+                android:hint="Enter custom genre"
                 android:inputType="text"
                 android:padding="12dp"
                 android:textSize="16sp"/>
@@ -105,7 +105,7 @@
                 android:id="@+id/descriptionInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/add_book_description_hint"
+                android:hint="Description"
                 android:inputType="textMultiLine"
                 android:minLines="3"
                 android:padding="12dp"
@@ -124,7 +124,7 @@
                 android:id="@+id/summaryInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/add_book_summary_hint"
+                android:hint="Summary (optional)"
                 android:inputType="textMultiLine"
                 android:minLines="2"
                 android:padding="12dp"
@@ -149,7 +149,7 @@
                     android:id="@+id/isbnInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/add_book_isbn_hint"
+                    android:hint="ISBN (optional)"
                     android:inputType="text"
                     android:padding="12dp"
                     android:textSize="16sp"/>
@@ -165,10 +165,54 @@
                 app:hintTextColor="@color/peacock_green">
 
                 <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/pageCountInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Page Count"
+                    android:inputType="number"
+                    android:padding="12dp"
+                    android:textSize="16sp"/>
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="6dp"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                app:boxStrokeColor="@color/peacock_green"
+                app:hintTextColor="@color/peacock_green">
+
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/copiesInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/add_book_copies_hint"
+                    android:hint="Total Copies"
+                    android:inputType="number"
+                    android:padding="12dp"
+                    android:textSize="16sp"/>
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="6dp"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                app:boxStrokeColor="@color/peacock_green"
+                app:hintTextColor="@color/peacock_green">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/availableCopiesInput"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Available Copies"
                     android:inputType="number"
                     android:padding="12dp"
                     android:textSize="16sp"/>
@@ -193,7 +237,7 @@
                     android:id="@+id/languageInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/add_book_language_hint"
+                    android:hint="Language"
                     android:inputType="text"
                     android:padding="12dp"
                     android:textSize="16sp"/>
@@ -209,38 +253,20 @@
                 app:hintTextColor="@color/peacock_green">
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/pageCountInput"
+                    android:id="@+id/publisherInput"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="@string/add_book_page_count_hint"
-                    android:inputType="number"
+                    android:hint="Publisher (optional)"
+                    android:inputType="text"
                     android:padding="12dp"
                     android:textSize="16sp"/>
             </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-            app:boxStrokeColor="@color/peacock_green"
-            app:hintTextColor="@color/peacock_green">
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/publisherInput"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/add_book_publisher_hint"
-                android:inputType="text"
-                android:padding="12dp"
-                android:textSize="16sp"/>
-        </com.google.android.material.textfield.TextInputLayout>
-
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/add_book_cover_label"
+            android:text="Book Cover Image"
             android:textSize="16sp"
             android:textStyle="bold"
             android:textColor="@color/peacock_green"
@@ -259,7 +285,7 @@
                 android:layout_height="48dp"
                 android:layout_weight="1"
                 android:layout_marginEnd="4dp"
-                android:text="@string/add_book_upload_image"
+                android:text="📁 Upload Image"
                 android:backgroundTint="@color/peacock_green"
                 android:textColor="@color/white"
                 android:textSize="14sp"/>
@@ -270,7 +296,7 @@
                 android:layout_height="48dp"
                 android:layout_weight="1"
                 android:layout_marginStart="4dp"
-                android:text="@string/add_book_take_photo"
+                android:text="📸 Take Photo"
                 android:backgroundTint="@color/peacock_green"
                 android:textColor="@color/white"
                 android:textSize="14sp"/>
@@ -279,7 +305,7 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/add_book_or_enter_url"
+            android:text="OR enter image URL"
             android:textSize="14sp"
             android:textColor="@color/gray"
             android:gravity="center"
@@ -297,7 +323,7 @@
                 android:id="@+id/coverUrlInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/add_book_cover_url_hint"
+                android:hint="Image URL (https://...)"
                 android:inputType="textUri"
                 android:padding="12dp"
                 android:textSize="16sp"/>
@@ -332,10 +358,10 @@
             android:indeterminateTint="@color/peacock_green"/>
 
         <Button
-            android:id="@+id/addButton"
+            android:id="@+id/updateButton"
             android:layout_width="match_parent"
             android:layout_height="52dp"
-            android:text="@string/add_book_button"
+            android:text="Update Book"
             android:textSize="16sp"
             android:textStyle="bold"
             android:textColor="@color/white"
@@ -346,7 +372,7 @@
             android:id="@+id/cancelButton"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:text="@string/common_cancel"
+            android:text="Cancel"
             android:textSize="16sp"
             android:textColor="@color/peacock_green"
             android:backgroundTint="@color/white"

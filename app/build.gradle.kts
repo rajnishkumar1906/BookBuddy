@@ -55,7 +55,8 @@ dependencies {
     implementation(libs.firebase.messaging)
     implementation(libs.glide)
 
-    implementation(libs.play.services.vision)   // for vision duplicates
+    implementation(libs.play.services.vision)
+    implementation(libs.firebase.storage)   // for vision duplicates
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

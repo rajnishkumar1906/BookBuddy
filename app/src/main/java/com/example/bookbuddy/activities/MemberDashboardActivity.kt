@@ -25,11 +25,8 @@ import com.google.firebase.firestore.ListenerRegistration
 
 class MemberDashboardActivity : AppCompatActivity() {
 
-    // Firebase
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
-
-    // UI Components
     private lateinit var toolbar: Toolbar
     private lateinit var recyclerView: RecyclerView
     private lateinit var bookAdapter: BookAdapter
@@ -42,7 +39,6 @@ class MemberDashboardActivity : AppCompatActivity() {
     private lateinit var btnMyBooks: Button
     private lateinit var btnAISearch: Button
 
-    // Data
     private var bookListener: ListenerRegistration? = null
     private val books = mutableListOf<Book>()
     private var currentUserName = ""
@@ -51,37 +47,20 @@ class MemberDashboardActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_member_dashboard)
 
-        // Initialize Firebase
-        try {
-            auth = FirebaseAuth.getInstance()
-            db = FirebaseFirestore.getInstance()
-        } catch (e: Exception) {
-            Toast.makeText(this, "Firebase initialization failed", Toast.LENGTH_LONG).show()
-            finish()
-            return
-        }
+        auth = FirebaseAuth.getInstance()
+        db = FirebaseFirestore.getInstance()
 
-        // Check if user is logged in
         if (auth.currentUser == null) {
             navigateToLogin()
             return
         }
 
-        // Initialize views
         initializeViews()
-
-        // Setup toolbar
         setupToolbar()
-
-        // Get user details and verify role
         getUserDetails()
-
-        // Setup views
         setupRecyclerView()
         setupSearchView()
         setupClickListeners()
-
-        // Load books
         loadBooks()
     }
 
@@ -100,19 +79,15 @@ class MemberDashboardActivity : AppCompatActivity() {
 
     private fun setupToolbar() {
         setSupportActionBar(toolbar)
-        supportActionBar?.title = "BookBuddy - Member"
+        supportActionBar?.title = getString(R.string.member_dashboard_title)
     }
 
     private fun setupRecyclerView() {
         bookAdapter = BookAdapter(books) { book ->
-            try {
-                val intent = Intent(this, BookDetailActivity::class.java)
-                intent.putExtra("bookId", book.id)
-                intent.putExtra("source", "member")
-                startActivity(intent)
-            } catch (e: Exception) {
-                Toast.makeText(this, "Cannot open book details", Toast.LENGTH_SHORT).show()
-            }
+            val intent = Intent(this, BookDetailActivity::class.java)
+            intent.putExtra("bookId", book.id)
+            intent.putExtra("source", "member")
+            startActivity(intent)
         }
         recyclerView.layoutManager = LinearLayoutManager(this)
         recyclerView.adapter = bookAdapter
@@ -139,7 +114,7 @@ class MemberDashboardActivity : AppCompatActivity() {
     private fun setupClickListeners() {
         btnBrowseBooks.setOnClickListener {
             loadBooks()
-            Toast.makeText(this, "Browsing all books", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, R.string.member_browse_books, Toast.LENGTH_SHORT).show()
         }
 
         btnMyBooks.setOnClickListener {
@@ -161,22 +136,21 @@ class MemberDashboardActivity : AppCompatActivity() {
                     val user = document.toObject(User::class.java)
                     currentUserName = user?.name ?: "Member"
 
-                    // CRITICAL: If user is librarian, redirect them
                     if (user?.role == "librarian") {
-                        Toast.makeText(this, "Accessing Librarian Dashboard...", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, R.string.librarian_access_redirect, Toast.LENGTH_SHORT).show()
                         navigateToLibrarianDashboard()
                         return@addOnSuccessListener
                     }
 
-                    welcomeText.text = "Welcome, $currentUserName!"
+                    val welcomeMessage = getString(R.string.member_welcome, currentUserName)
+                    welcomeText.text = welcomeMessage
                     welcomeText.visibility = View.VISIBLE
                 } else {
-                    // Create user document if it doesn't exist
                     createUserDocument(userId)
                 }
             }
             .addOnFailureListener {
-                welcomeText.text = "Welcome, Member!"
+                welcomeText.text = getString(R.string.member_welcome_default)
                 welcomeText.visibility = View.VISIBLE
             }
     }
@@ -186,14 +160,14 @@ class MemberDashboardActivity : AppCompatActivity() {
             id = userId,
             name = auth.currentUser?.displayName ?: "User",
             email = auth.currentUser?.email ?: "",
-            role = "member"  // Default to member
+            role = "member"
         )
 
         db.collection("users").document(userId)
             .set(user)
             .addOnSuccessListener {
                 currentUserName = user.name
-                welcomeText.text = "Welcome, $currentUserName!"
+                welcomeText.text = getString(R.string.member_welcome, currentUserName)
                 welcomeText.visibility = View.VISIBLE
             }
     }
@@ -206,7 +180,7 @@ class MemberDashboardActivity : AppCompatActivity() {
                 showLoading(false)
 
                 if (error != null) {
-                    Toast.makeText(this, "Error loading books", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, R.string.member_error_loading, Toast.LENGTH_SHORT).show()
                     return@addSnapshotListener
                 }
 
@@ -217,14 +191,13 @@ class MemberDashboardActivity : AppCompatActivity() {
                         book.id = document.id
                         books.add(book)
                     } catch (e: Exception) {
-                        // Skip invalid book
                     }
                 }
                 bookAdapter.updateList(books)
 
                 if (books.isEmpty()) {
                     emptyStateLayout.visibility = View.VISIBLE
-                    emptyStateText.text = "No books available in library"
+                    emptyStateText.text = getString(R.string.member_empty_books)
                     recyclerView.visibility = View.GONE
                 } else {
                     emptyStateLayout.visibility = View.GONE
@@ -254,7 +227,6 @@ class MemberDashboardActivity : AppCompatActivity() {
                             searchResults.add(book)
                         }
                     } catch (e: Exception) {
-                        // Skip invalid books
                     }
                 }
 
@@ -262,7 +234,7 @@ class MemberDashboardActivity : AppCompatActivity() {
 
                 if (searchResults.isEmpty()) {
                     emptyStateLayout.visibility = View.VISIBLE
-                    emptyStateText.text = "No books found matching '$query'"
+                    emptyStateText.text = getString(R.string.member_empty_search, query)
                     recyclerView.visibility = View.GONE
                 } else {
                     emptyStateLayout.visibility = View.GONE
@@ -271,7 +243,7 @@ class MemberDashboardActivity : AppCompatActivity() {
             }
             .addOnFailureListener {
                 showLoading(false)
-                Toast.makeText(this, "Search failed", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, R.string.member_error_loading, Toast.LENGTH_SHORT).show()
             }
     }
 
@@ -292,7 +264,7 @@ class MemberDashboardActivity : AppCompatActivity() {
 
     private fun logoutUser() {
         auth.signOut()
-        Toast.makeText(this, "Logged out successfully", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, R.string.logout_success, Toast.LENGTH_SHORT).show()
         navigateToLogin()
     }
 

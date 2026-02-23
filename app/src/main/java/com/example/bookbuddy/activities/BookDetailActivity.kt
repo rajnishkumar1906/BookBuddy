@@ -9,16 +9,16 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.bumptech.glide.Glide  // 👈 ADD THIS IMPORT
+import com.bumptech.glide.Glide
 import com.example.bookbuddy.R
 import com.example.bookbuddy.models.Book
 import com.example.bookbuddy.models.BookInteraction
 import com.example.bookbuddy.models.BorrowRecord
 import com.example.bookbuddy.models.User
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.Timestamp
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.FirebaseFirestore
 import java.util.Date
 
 class BookDetailActivity : AppCompatActivity() {
@@ -27,15 +27,18 @@ class BookDetailActivity : AppCompatActivity() {
     private lateinit var db: FirebaseFirestore
     private lateinit var book: Book
 
-    // UI Components
-    private lateinit var bookCover: ImageView  // 👈 NEW
-    private lateinit var noImageText: TextView // 👈 NEW
+    private lateinit var bookCover: ImageView
+    private lateinit var noImageText: TextView
     private lateinit var bookTitle: TextView
     private lateinit var bookAuthor: TextView
     private lateinit var bookGenre: TextView
     private lateinit var bookDescription: TextView
     private lateinit var bookSummary: TextView
     private lateinit var bookAvailability: TextView
+    private lateinit var bookIsbn: TextView
+    private lateinit var bookPublisher: TextView
+    private lateinit var bookPages: TextView
+    private lateinit var bookLanguage: TextView
     private lateinit var borrowButton: Button
     private lateinit var returnButton: Button
     private lateinit var progressBar: ProgressBar
@@ -52,10 +55,8 @@ class BookDetailActivity : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         db = FirebaseFirestore.getInstance()
 
-        // Initialize views
         initializeViews()
 
-        // Check if user is logged in
         if (auth.currentUser == null) {
             Toast.makeText(this, "Please login first", Toast.LENGTH_SHORT).show()
             startActivity(Intent(this, LoginActivity::class.java))
@@ -66,7 +67,6 @@ class BookDetailActivity : AppCompatActivity() {
         val bookId = intent.getStringExtra("bookId") ?: return
         val source = intent.getStringExtra("source") ?: ""
 
-        // Check if this is from MyBooks (show return button)
         if (source == "mybooks") {
             hasUserBorrowed = true
         }
@@ -79,14 +79,18 @@ class BookDetailActivity : AppCompatActivity() {
     }
 
     private fun initializeViews() {
-        bookCover = findViewById(R.id.bookCover)           // 👈 NEW
-        noImageText = findViewById(R.id.noImageText)       // 👈 NEW
+        bookCover = findViewById(R.id.bookCover)
+        noImageText = findViewById(R.id.noImageText)
         bookTitle = findViewById(R.id.bookTitle)
         bookAuthor = findViewById(R.id.bookAuthor)
         bookGenre = findViewById(R.id.bookGenre)
         bookDescription = findViewById(R.id.bookDescription)
         bookSummary = findViewById(R.id.bookSummary)
         bookAvailability = findViewById(R.id.bookAvailability)
+        bookIsbn = findViewById(R.id.bookIsbn)
+        bookPublisher = findViewById(R.id.bookPublisher)
+        bookPages = findViewById(R.id.bookPages)
+        bookLanguage = findViewById(R.id.bookLanguage)
         borrowButton = findViewById(R.id.borrowButton)
         returnButton = findViewById(R.id.returnButton)
         progressBar = findViewById(R.id.progressBar)
@@ -123,13 +127,11 @@ class BookDetailActivity : AppCompatActivity() {
 
                 book = document.toObject(Book::class.java)!!
                 book.id = document.id
-
-                // Display book details
                 displayBookDetails()
             }
-            .addOnFailureListener { e ->
+            .addOnFailureListener {
                 showLoading(false)
-                Toast.makeText(this, "Error loading book: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Error loading book", Toast.LENGTH_SHORT).show()
                 finish()
             }
     }
@@ -141,40 +143,36 @@ class BookDetailActivity : AppCompatActivity() {
         bookDescription.text = book.description.ifEmpty { "No description available" }
         bookSummary.text = book.summary.ifEmpty { generateSummary() }
 
+        bookIsbn.text = "ISBN: ${book.isbn.ifEmpty { "N/A" }}"
+        bookPublisher.text = "Publisher: ${book.publisher.ifEmpty { "N/A" }}"
+        bookPages.text = "Pages: ${book.pageCount}"
+        bookLanguage.text = "Language: ${book.language}"
+
         val availabilityText = "Available: ${book.availableCopies}/${book.totalCopies}"
         bookAvailability.text = availabilityText
 
-        // 👇 NEW: Load book cover image
         loadBookCover()
 
-        // Set color based on availability
         if (book.availableCopies > 0) {
-            bookAvailability.setTextColor(getColor(R.color.purple_500))
+            bookAvailability.setTextColor(getColor(R.color.success))
         } else {
-            bookAvailability.setTextColor(getColor(android.R.color.holo_red_dark))
+            bookAvailability.setTextColor(getColor(R.color.error))
         }
 
-        // Update button states
         updateButtonStates()
-
-        // Record view interaction
         recordInteraction("view")
     }
 
-    // 👇 NEW: Function to load book cover image
     private fun loadBookCover() {
         if (book.coverUrl.isNotEmpty()) {
-            // Try to load image from URL
             Glide.with(this)
                 .load(book.coverUrl)
-                .placeholder(R.drawable.ic_book_placeholder)  // While loading
-                .error(R.drawable.ic_book_error)              // If error
+                .placeholder(R.drawable.ic_book_placeholder)
+                .error(R.drawable.ic_book_error)
                 .into(bookCover)
-
             bookCover.visibility = View.VISIBLE
             noImageText.visibility = View.GONE
         } else {
-            // No image URL - show placeholder
             bookCover.setImageResource(R.drawable.ic_book_placeholder)
             bookCover.visibility = View.VISIBLE
             noImageText.visibility = View.VISIBLE
@@ -226,23 +224,20 @@ class BookDetailActivity : AppCompatActivity() {
     }
 
     private fun updateButtonStates() {
-        if (hasUserBorrowed) {
-            // User has borrowed this book - show Return button
-            borrowButton.visibility = View.GONE
-            returnButton.visibility = View.VISIBLE
-            returnButton.isEnabled = true
-        } else {
-            // User hasn't borrowed - show Borrow button if available
-            borrowButton.visibility = View.VISIBLE
-            returnButton.visibility = View.GONE
-            borrowButton.isEnabled = book.availableCopies > 0 && !isUserLibrarian
-            borrowButton.text = if (book.availableCopies > 0) "Borrow Book" else "Not Available"
-        }
-
-        // Librarians see different options
         if (isUserLibrarian) {
             borrowButton.visibility = View.GONE
-            // Could show Edit/Delete buttons for librarians
+            returnButton.visibility = View.GONE
+        } else {
+            if (hasUserBorrowed) {
+                borrowButton.visibility = View.GONE
+                returnButton.visibility = View.VISIBLE
+                returnButton.isEnabled = true
+            } else {
+                borrowButton.visibility = View.VISIBLE
+                returnButton.visibility = View.GONE
+                borrowButton.isEnabled = book.availableCopies > 0
+                borrowButton.text = if (book.availableCopies > 0) "Borrow Book" else "Not Available"
+            }
         }
     }
 
@@ -261,38 +256,32 @@ class BookDetailActivity : AppCompatActivity() {
 
         showLoading(true)
 
-        // Create borrow record
         val borrowRecord = BorrowRecord(
             bookId = book.id,
             bookTitle = book.title,
             userId = userId,
             userName = auth.currentUser?.displayName ?: "User",
             borrowedAt = Timestamp.now(),
-            dueDate = Timestamp(Date(System.currentTimeMillis() + (14 * 24 * 60 * 60 * 1000))), // 14 days
+            dueDate = Timestamp(Date(System.currentTimeMillis() + (14 * 24 * 60 * 60 * 1000))),
             status = "BORROWED"
         )
 
-        // Run transaction to update both book and create borrow record
         db.runTransaction { transaction ->
-            // Update book availability
             val bookRef = db.collection("books").document(book.id)
             transaction.update(bookRef, "availableCopies", book.availableCopies - 1)
             transaction.update(bookRef, "timesBorrowed", book.timesBorrowed + 1)
 
-            // Add borrow record
             val borrowRef = db.collection("borrowRecords").document()
             transaction.set(borrowRef, borrowRecord)
 
         }.addOnSuccessListener {
-            // Update user's borrowed books list
             db.collection("users").document(userId)
                 .update("borrowedBooks", FieldValue.arrayUnion(book.id))
                 .addOnSuccessListener {
                     showLoading(false)
                     recordInteraction("borrow")
-                    Toast.makeText(this, "Book borrowed successfully! Due in 14 days", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this, "✅ Book borrowed successfully! Due in 14 days", Toast.LENGTH_LONG).show()
 
-                    // Update local state
                     hasUserBorrowed = true
                     book.availableCopies--
                     updateButtonStates()
@@ -300,11 +289,11 @@ class BookDetailActivity : AppCompatActivity() {
                 }
                 .addOnFailureListener { e ->
                     showLoading(false)
-                    Toast.makeText(this, "Error updating user: ${e.message}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
         }.addOnFailureListener { e ->
             showLoading(false)
-            Toast.makeText(this, "Error borrowing book: ${e.message}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -313,7 +302,6 @@ class BookDetailActivity : AppCompatActivity() {
 
         showLoading(true)
 
-        // Find the active borrow record
         db.collection("borrowRecords")
             .whereEqualTo("userId", userId)
             .whereEqualTo("bookId", book.id)
@@ -324,27 +312,22 @@ class BookDetailActivity : AppCompatActivity() {
                     val record = snapshot.documents[0]
                     val recordId = record.id
 
-                    // Run transaction to update both record and book
                     db.runTransaction { transaction ->
-                        // Update borrow record
                         val recordRef = db.collection("borrowRecords").document(recordId)
                         transaction.update(recordRef, "returnedAt", Timestamp.now())
                         transaction.update(recordRef, "status", "RETURNED")
 
-                        // Update book availability
                         val bookRef = db.collection("books").document(book.id)
                         transaction.update(bookRef, "availableCopies", book.availableCopies + 1)
 
                     }.addOnSuccessListener {
-                        // Remove from user's borrowed books
                         db.collection("users").document(userId)
                             .update("borrowedBooks", FieldValue.arrayRemove(book.id))
                             .addOnSuccessListener {
                                 showLoading(false)
                                 recordInteraction("return")
-                                Toast.makeText(this, "Book returned! Thank you!", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this, "✅ Book returned! Thank you!", Toast.LENGTH_SHORT).show()
 
-                                // Update local state
                                 hasUserBorrowed = false
                                 book.availableCopies++
                                 updateButtonStates()
@@ -352,11 +335,11 @@ class BookDetailActivity : AppCompatActivity() {
                             }
                             .addOnFailureListener { e ->
                                 showLoading(false)
-                                Toast.makeText(this, "Error updating user: ${e.message}", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
                             }
                     }.addOnFailureListener { e ->
                         showLoading(false)
-                        Toast.makeText(this, "Error returning book: ${e.message}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
                     }
                 } else {
                     showLoading(false)
@@ -365,7 +348,7 @@ class BookDetailActivity : AppCompatActivity() {
             }
             .addOnFailureListener { e ->
                 showLoading(false)
-                Toast.makeText(this, "Error finding borrow record: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
             }
     }
 
@@ -384,10 +367,6 @@ class BookDetailActivity : AppCompatActivity() {
         db.collection("users").document(userId)
             .collection("interactions")
             .add(interaction)
-            .addOnFailureListener { e ->
-                // Just log, don't show to user
-                e.printStackTrace()
-            }
     }
 
     private fun showLoading(show: Boolean) {
