@@ -7,6 +7,7 @@ data class Book(
     var genre: String = "",
     var description: String = "",
     var summary: String = "",
+    var aiSummary: String = "",           // Gemini-generated summary
     var isbn: String = "",
     var coverUrl: String = "",
     var availableCopies: Int = 1,
@@ -14,6 +15,7 @@ data class Book(
     var timesBorrowed: Int = 0,
     var rating: Float = 0f,
     var keywords: List<String> = listOf(),
+    var embedding: List<Double> = listOf(), // Hugging Face embedding (384-dim)
     var addedBy: String = "",
     var addedAt: Long = System.currentTimeMillis(),
     var language: String = "English",
@@ -27,6 +29,7 @@ data class Book(
         genre = "",
         description = "",
         summary = "",
+        aiSummary = "",
         isbn = "",
         coverUrl = "",
         availableCopies = 1,
@@ -34,6 +37,7 @@ data class Book(
         timesBorrowed = 0,
         rating = 0f,
         keywords = emptyList(),
+        embedding = emptyList(),
         addedBy = "",
         addedAt = System.currentTimeMillis(),
         language = "English",

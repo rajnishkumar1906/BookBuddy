@@ -4,31 +4,31 @@
 
     <item
         android:id="@+id/action_add_book"
-        android:title="Add Book"
-        android:icon="@drawable/ic_add"
+        android:title="@string/librarian_add_book"
+        android:icon="@drawable/ic_borrow"
         app:showAsAction="ifRoom"/>
 
     <item
         android:id="@+id/action_librarian_dashboard"
-        android:title="Dashboard"
+        android:title="@string/librarian_dashboard_title"
         android:icon="@drawable/ic_dashboard"
         app:showAsAction="never"/>
 
     <item
         android:id="@+id/action_my_books"
-        android:title="My Books"
+        android:title="@string/member_my_books"
         android:icon="@drawable/ic_books"
         app:showAsAction="never"/>
 
     <item
         android:id="@+id/action_ai_search"
-        android:title="AI Search"
-        android:icon="@drawable/ic_ai"
+        android:title="@string/member_ai_search"
+        android:icon="@drawable/ic_ai_search"
         app:showAsAction="never"/>
 
     <item
         android:id="@+id/action_logout"
-        android:title="Logout"
+        android:title="@string/common_logout"
         android:icon="@drawable/ic_logout"
         app:showAsAction="never"/>
 </menu>

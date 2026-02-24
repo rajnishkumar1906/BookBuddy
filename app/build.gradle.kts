@@ -6,7 +6,7 @@ plugins {
 
 android {
     namespace = "com.example.bookbuddy"
-    compileSdk = 36   // Note: you had release(36) — assuming it's compileSdk = 36
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.bookbuddy"
@@ -16,6 +16,9 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // Add BuildConfig field for API keys
+        buildConfigField("String", "GEMINI_API_KEY", "\"YOUR_GEMINI_API_KEY_HERE\"")
     }
 
     buildTypes {
@@ -36,12 +39,22 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+
+    // Enable BuildConfig
+    buildFeatures {
+        buildConfig = true
+    }
+
+    buildFeatures {
+        viewBinding = true
+    }
 }
 
 dependencies {
+    // Existing dependencies (keep all)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
-    implementation(libs.material)               // ← 1.12.0 from catalog
+    implementation(libs.material)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
     implementation(libs.firebase.auth)
@@ -54,11 +67,49 @@ dependencies {
     implementation(libs.firebase.inappmessaging.display)
     implementation(libs.firebase.messaging)
     implementation(libs.glide)
-
     implementation(libs.play.services.vision)
-    implementation(libs.firebase.storage)   // for vision duplicates
+    implementation(libs.firebase.storage)
 
+
+    // 1. OkHttp for API calls (Hugging Face & Gemini)
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+
+    // 2. Gson/JSON for parsing API responses
+    implementation("com.google.code.gson:gson:2.10.1")
+
+    // 3. Coroutines for async operations
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+
+    // 4. For vector operations (cosine similarity)
+    implementation("org.apache.commons:commons-math3:3.6.1")
+
+    // 5. For image loading (you already have Glide)
+    // implementation(libs.glide) - already present
+
+    // 6. For potential ML Kit (optional)
+    implementation("com.google.mlkit:text-recognition:16.0.0")
+
+    // ========== TESTING ==========
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+
+
+
+    // ViewModel
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2")
+
+    // LiveData
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.2")
+
+    // Lifecycle runtime (includes lifecycleScope)
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
+
+    // Coroutines
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+
 }

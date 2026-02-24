@@ -12,6 +12,7 @@
         android:orientation="vertical"
         android:padding="16dp">
 
+        <!-- Back Button -->
         <Button
             android:id="@+id/backButton"
             android:layout_width="wrap_content"
@@ -22,6 +23,7 @@
             android:stateListAnimator="@null"
             android:layout_marginBottom="16dp"/>
 
+        <!-- Book Header with Cover and Basic Info -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -29,22 +31,23 @@
             android:gravity="center"
             android:layout_marginBottom="24dp">
 
+            <!-- Book Cover -->
             <FrameLayout
-                android:layout_width="150dp"
-                android:layout_height="200dp"
+                android:layout_width="120dp"
+                android:layout_height="160dp"
                 android:layout_marginEnd="16dp">
 
                 <ImageView
                     android:id="@+id/bookCover"
-                    android:layout_width="150dp"
-                    android:layout_height="200dp"
+                    android:layout_width="120dp"
+                    android:layout_height="160dp"
                     android:scaleType="centerCrop"
                     android:visibility="gone"/>
 
                 <TextView
                     android:id="@+id/noImageText"
-                    android:layout_width="150dp"
-                    android:layout_height="200dp"
+                    android:layout_width="120dp"
+                    android:layout_height="160dp"
                     android:text="No cover"
                     android:gravity="center"
                     android:background="@color/light_gray"
@@ -52,6 +55,7 @@
                     android:visibility="gone"/>
             </FrameLayout>
 
+            <!-- Basic Info -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -82,7 +86,8 @@
                     android:textSize="14sp"
                     android:textColor="@color/peacock_green"
                     android:background="@color/peacock_green_soft"
-                    android:padding="4dp"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="4dp"
                     android:layout_marginBottom="8dp"/>
 
                 <TextView
@@ -95,6 +100,27 @@
             </LinearLayout>
         </LinearLayout>
 
+        <!-- AI Summary Section -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🤖 AI Summary"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/peacock_green"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:id="@+id/bookAiSummary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:textColor="@color/black"
+            android:background="@color/peacock_green_soft"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Description Section -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -112,6 +138,7 @@
             android:textColor="@color/black"
             android:layout_marginBottom="16dp"/>
 
+        <!-- Summary Section -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -129,6 +156,7 @@
             android:textColor="@color/black"
             android:layout_marginBottom="16dp"/>
 
+        <!-- Details Grid -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -145,6 +173,7 @@
             android:rowCount="4"
             android:layout_marginBottom="24dp">
 
+            <!-- ISBN -->
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -161,6 +190,7 @@
                 android:textColor="@color/black"
                 android:padding="4dp"/>
 
+            <!-- Publisher -->
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -177,6 +207,7 @@
                 android:textColor="@color/black"
                 android:padding="4dp"/>
 
+            <!-- Pages -->
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -193,6 +224,7 @@
                 android:textColor="@color/black"
                 android:padding="4dp"/>
 
+            <!-- Language -->
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -210,6 +242,7 @@
                 android:padding="4dp"/>
         </GridLayout>
 
+        <!-- Progress Bar -->
         <ProgressBar
             android:id="@+id/progressBar"
             android:layout_width="40dp"
@@ -219,6 +252,7 @@
             android:visibility="gone"
             android:indeterminateTint="@color/peacock_green"/>
 
+        <!-- Action Buttons -->
         <Button
             android:id="@+id/borrowButton"
             android:layout_width="match_parent"

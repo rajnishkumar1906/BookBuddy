@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="@color/peacock_green"
-        app:title="BookBuddy"
+        app:title="Librarian Panel"
         app:titleTextColor="@color/white"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
@@ -26,7 +26,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
-        app:menu="@menu/member_bottom_nav"
+        app:menu="@menu/librarian_bottom_nav"
         app:itemIconTint="@color/bottom_nav_selector"
         app:itemTextColor="@color/bottom_nav_selector"
         app:elevation="8dp" />

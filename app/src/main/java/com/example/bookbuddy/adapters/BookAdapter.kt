@@ -33,20 +33,13 @@ class BookAdapter(
         try {
             val book = books[position]
 
-            // Set title
             holder.title.text = if (book.title.isNotEmpty()) book.title else "Untitled Book"
-
-            // Set author
             holder.author.text = if (book.author.isNotEmpty()) "by ${book.author}" else "Unknown Author"
-
-            // Set genre
             holder.genre.text = if (book.genre.isNotEmpty()) book.genre else "Uncategorized"
 
-            // Set availability
             val availableText = "Available: ${book.availableCopies}/${book.totalCopies}"
             holder.availability.text = availableText
 
-            // Set colors based on availability
             if (book.availableCopies > 0) {
                 holder.availability.setTextColor(holder.itemView.context.getColor(R.color.peacock_green))
                 holder.cardView.setCardBackgroundColor(holder.itemView.context.getColor(R.color.white))
@@ -55,7 +48,6 @@ class BookAdapter(
                 holder.cardView.setCardBackgroundColor(holder.itemView.context.getColor(R.color.peacock_green_soft))
             }
 
-            // Set click listener
             holder.itemView.setOnClickListener {
                 try {
                     onItemClick(book)
@@ -65,7 +57,6 @@ class BookAdapter(
             }
 
         } catch (e: Exception) {
-            // Show error state
             holder.title.text = "Error loading book"
             holder.author.text = ""
             holder.genre.text = ""
@@ -82,51 +73,4 @@ class BookAdapter(
         books = newList
         notifyDataSetChanged()
     }
-
-    fun getItem(position: Int): Book? {
-        return if (position >= 0 && position < books.size) books[position] else null
-    }
-
-    fun isEmpty(): Boolean = books.isEmpty()
-
-    fun clear() {
-        books = emptyList()
-        notifyDataSetChanged()
-    }
-
-    fun addItem(book: Book) {
-        val newList = books.toMutableList()
-        newList.add(book)
-        books = newList
-        notifyItemInserted(books.size - 1)
-    }
-
-    fun addAll(newBooks: List<Book>) {
-        val newList = books.toMutableList()
-        newList.addAll(newBooks)
-        books = newList
-        notifyDataSetChanged()
-    }
-
-    fun removeItem(bookId: String) {
-        val index = books.indexOfFirst { it.id == bookId }
-        if (index != -1) {
-            val newList = books.toMutableList()
-            newList.removeAt(index)
-            books = newList
-            notifyItemRemoved(index)
-        }
-    }
-
-    fun updateItem(updatedBook: Book) {
-        val index = books.indexOfFirst { it.id == updatedBook.id }
-        if (index != -1) {
-            val newList = books.toMutableList()
-            newList[index] = updatedBook
-            books = newList
-            notifyItemChanged(index)
-        }
-    }
-
-    fun getBooks(): List<Book> = books
 }

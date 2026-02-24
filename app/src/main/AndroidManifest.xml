@@ -1,12 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.bookbuddy">
+
     <!-- Permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.CAMERA" /> <!-- Hardware Features (Optional) -->
+    <uses-permission android:name="android.permission.CAMERA" />
+
     <uses-feature
         android:name="android.hardware.camera"
-        android:required="false" /> <!-- For reading storage (Android 12 and below) -->
+        android:required="false" />
+
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
@@ -18,49 +21,44 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.BookBuddy">
+
+        <!-- Splash Activity (LAUNCHER) -->
         <activity
-            android:name=".activities.ManageBooksActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activities.EditBookActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activities.MemberDashboardActivity"
-            android:exported="false" /> <!-- Splash Activity (LAUNCHER) -->
-        <activity
-            android:name=".activities.SplashActivity"
+            android:name=".activities.auth.SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.BookBuddy.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity> <!-- ALL ACTIVITIES MUST BE DECLARED HERE -->
+        </activity>
+
+        <!-- Auth Activities -->
         <activity
-            android:name=".activities.LoginActivity"
+            android:name=".activities.auth.LoginActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.SignupActivity"
+            android:name=".activities.auth.SignupActivity"
+            android:exported="false" />
+
+        <!-- Member Activities -->
+        <activity
+            android:name=".activities.member.MemberMainActivity"
+            android:exported="false" />
+
+        <!-- Librarian Activities -->
+        <activity
+            android:name=".activities.librarian.LibrarianMainActivity"
+            android:exported="false" />
+
+        <!-- Shared Activities -->
+        <activity
+            android:name=".activities.shared.BookDetailActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.MainActivity"
+            android:name=".activities.shared.MyBooksActivity"
             android:exported="false" />
-        <activity
-            android:name=".activities.BookDetailActivity"
-            android:exported="false" /> <!-- 👈 THIS WAS MISSING -->
-        <activity
-            android:name=".activities.AddBookActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activities.MyBooksActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activities.AISearchActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activities.LibrarianDashboardActivity"
-            android:exported="false" />
+
     </application>
 
 </manifest>

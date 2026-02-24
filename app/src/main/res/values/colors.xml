@@ -1,40 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- ========== PEACOCK GREEN PRIMARY COLORS ========== -->
     <color name="peacock_green">#1B8C5E</color>
     <color name="peacock_green_dark">#0A5C3B</color>
     <color name="peacock_green_light">#7FBF9F</color>
     <color name="peacock_green_soft">#E8F3EF</color>
 
+    <!-- ========== ACCENT COLORS ========== -->
     <color name="gold_accent">#FFC107</color>
 
+    <!-- ========== BASIC COLORS ========== -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="transparent">#00000000</color>
 
+    <!-- ========== GRAY SCALE ========== -->
     <color name="light_gray">#F5F5F5</color>
     <color name="gray">#757575</color>
     <color name="dark_gray">#212121</color>
 
+    <!-- ========== STATUS COLORS ========== -->
     <color name="success">#4CAF50</color>
     <color name="error">#F44336</color>
     <color name="error_red">#FF4444</color>
     <color name="warning">#FFC107</color>
     <color name="overdue">#FF5722</color>
 
+    <!-- ========== DARK MODE COLORS ========== -->
     <color name="dark_surface">#FF1E1E1E</color>
     <color name="dark_background">#FF121212</color>
     <color name="dark_card_background">#FF2D2D2D</color>
     <color name="dark_status_bar">#FF000000</color>
     <color name="dark_nav_bar">#FF1E1E1E</color>
 
+    <!-- ========== UI ELEMENT COLORS ========== -->
     <color name="status_bar">@color/peacock_green_dark</color>
     <color name="nav_bar">@color/peacock_green</color>
 
+    <!-- ========== BOOK STATUS INDICATORS ========== -->
     <color name="available">@color/success</color>
     <color name="not_available">@color/error</color>
     <color name="borrowed">@color/warning</color>
 
+    <!-- ========== CARD & SURFACE COLORS ========== -->
     <color name="card_background">@color/white</color>
-    <color name="card_background_dark">#2D2D2D</color>
-    <color name="divider">#E0E0E0</color>
+    <color name="card_background_dark">#FF2D2D2D</color>
+    <color name="divider">#FFE0E0E0</color>
+
+
+
 </resources>
