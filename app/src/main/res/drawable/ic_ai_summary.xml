@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Book Base -->
+    <path
+        android:fillColor="#FF6200EE"
+        android:pathData="M4,6L4,18h2L6,6L4,6zM7,6L7,18h2L9,6L7,6zM19,4h-8v16h8L19,4zM17,16h-4v-2h4v2zM17,12h-4v-2h4v2zM17,8h-4V6h4v2z"/>
+
+    <!-- AI Brain/Circuit Lines -->
+    <path
+        android:strokeColor="#FF6200EE"
+        android:strokeWidth="2"
+        android:pathData="M21,10 L23,10 M21,14 L23,14 M22,12 L22,14"/>
+
+    <!-- Circles (converted to paths) -->
+    <path
+        android:fillColor="#FF6200EE"
+        android:pathData="M22,8 m-1.5,0 a1.5,1.5 0 1,0 3,0 a1.5,1.5 0 1,0 -3,0"/>
+    <path
+        android:fillColor="#FF6200EE"
+        android:pathData="M22,16 m-1.5,0 a1.5,1.5 0 1,0 3,0 a1.5,1.5 0 1,0 -3,0"/>
+</vector>

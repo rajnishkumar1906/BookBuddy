@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_add_book"
+        android:title="@string/librarian_add_book"
+        android:icon="@drawable/ic_borrow"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/action_librarian_dashboard"
+        android:title="@string/librarian_dashboard_title"
+        android:icon="@drawable/ic_dashboard"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_my_books"
+        android:title="@string/member_my_books"
+        android:icon="@drawable/ic_books"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_ai_search"
+        android:title="@string/member_ai_search"
+        android:icon="@drawable/ic_ai_search"
+        app:showAsAction="never"/>
+
+    <item
+        android:id="@+id/action_logout"
+        android:title="@string/common_logout"
+        android:icon="@drawable/ic_logout"
+        app:showAsAction="never"/>
+</menu>

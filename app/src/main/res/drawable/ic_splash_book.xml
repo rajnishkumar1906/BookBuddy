@@ -1,0 +1,18 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- Outer book shape -->
+    <path
+        android:fillColor="#6366F1"
+        android:pathData="M18,2H6C4.9,2 4,2.9 4,4v16c0,1.1 0.9,2 2,2h12c1.1,0 2,-0.9 2,-2V4C20,2.9 19.1,2 18,2z" />
+    <!-- Book spine detail -->
+    <path
+        android:fillColor="#4F46E5"
+        android:pathData="M6,2h2v20H6V2z" />
+    <!-- Inner book pages detail -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M10,5h7v2h-7V5zM10,9h7v2h-7V9zM10,13h7v2h-7V13z" />
+</vector>
