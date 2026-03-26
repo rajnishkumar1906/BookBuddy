@@ -8,5 +8,5 @@ object Constants {
     
     // Gemini Configuration
     const val GEMINI_API_KEY = ""
-    const val GEMINI_MODEL = "gemini-1.5-flash"
+    const val GEMINI_MODEL = "gemini-2.5-flash"
 }
