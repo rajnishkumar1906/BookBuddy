@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Button xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/btnOption"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp"
+    android:textAllCaps="false"
+    android:textSize="14sp"
+    android:padding="12dp"
+    android:background="@android:color/transparent"
+    android:textColor="@color/primary"
+    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+    app:strokeColor="@color/primary"
+    xmlns:app="http://schemas.android.com/apk/res-auto" />

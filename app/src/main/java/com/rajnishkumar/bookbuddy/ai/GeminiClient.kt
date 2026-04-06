@@ -1,87 +1,211 @@
 package com.rajnishkumar.bookbuddy.ai
 
+import android.util.Log
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import com.rajnishkumar.bookbuddy.Constants
+import com.rajnishkumar.bookbuddy.common.Constants
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.util.concurrent.TimeUnit
 
 class GeminiClient {
 
     private val client: OkHttpClient by lazy {
         OkHttpClient.Builder()
-            .connectTimeout(30, TimeUnit.SECONDS)
-            .readTimeout(30, TimeUnit.SECONDS)
+            .connectTimeout(45, TimeUnit.SECONDS)
+            .readTimeout(45, TimeUnit.SECONDS)
             .build()
     }
 
-    private val GEMINI_URL = "https://generativelanguage.googleapis.com/v1beta/models/${Constants.GEMINI_MODEL}:generateContent?key=${Constants.GEMINI_API_KEY}"
+    // Simple rate limiting: max 15 requests per minute
+    private var lastRequestTime = 0L
+    private var requestCount = 0
+    private val MAX_REQUESTS_PER_MINUTE = 15
 
-    suspend fun summarizeBook(description: String): String = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
-        val prompt = "Summarize the following book description in a concise and engaging way (max 100 words): $description"
-        generateContent(prompt)
+    private suspend fun checkRateLimit(): Boolean {
+        val currentTime = System.currentTimeMillis()
+        if (currentTime - lastRequestTime > 60000) {
+            lastRequestTime = currentTime
+            requestCount = 0
+        }
+        if (requestCount >= MAX_REQUESTS_PER_MINUTE) return false
+        requestCount++
+        return true
     }
 
-    suspend fun expandDescription(title: String, author: String, currentDesc: String): String = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+    /**
+     * Used by VocalRobo and MemberDashboard to generate plain-text AI responses.
+     */
+    suspend fun generateDirectResponse(prompt: String): String {
+        return generateAnswer(prompt)
+    }
+
+    /**
+     * Central answer generation method used by RAG and other features.
+     */
+    suspend fun generateAnswer(prompt: String): String = withContext(Dispatchers.IO) {
+        if (!checkRateLimit()) delay(3000)
+        generateRawContent(prompt)
+    }
+
+    suspend fun summarizeBook(title: String, author: String, description: String): String {
+        val prompt = "Summarize the book '$title' by $author based on this description: $description. Provide a concise narrative summary. No markdown."
+        return generateAnswer(prompt)
+    }
+
+    suspend fun generateQuiz(title: String, context: String): String {
         val prompt = """
-            The following book description is too short. Please expand it into a detailed, 300-word informative description including plot themes, setting, and style.
-            Book: $title
-            Author: $author
-            Current Info: $currentDesc
+            Generate exactly 5 multiple choice questions for the book "$title" based on this context: $context.
+            Return ONLY a valid JSON object. No other text.
+            Format:
+            {
+              "questions": [
+                {
+                  "question": "Question text here?",
+                  "options": ["Option 1", "Option 2", "Option 3", "Option 4"],
+                  "correct_answer": "Exact text of the correct option"
+                }
+              ]
+            }
         """.trimIndent()
-        generateContent(prompt)
-    }
-
-    suspend fun chatWithBook(context: String, history: String, question: String): String = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
-        val prompt = """
-            You are a helpful library assistant. 
-            Base your answer only on the provided context and history.
-            
-            Context: $context
-            
-            History: 
-            $history
-            
-            User Question: $question
-        """.trimIndent()
-        generateContent(prompt)
-    }
-
-    private fun generateContent(prompt: String): String {
-        val json = JsonObject()
-        val contents = JsonArray()
-        val content = JsonObject()
-        val parts = JsonArray()
-        val part = JsonObject()
         
-        part.addProperty("text", prompt)
-        parts.add(part)
-        content.add("parts", parts)
-        contents.add(content)
-        json.add("contents", contents)
+        val response = generateAnswer(prompt)
+        return extractJson(response)
+    }
 
-        val body = RequestBody.create("application/json".toMediaTypeOrNull(), json.toString())
-        val request = Request.Builder().url(GEMINI_URL).post(body).build()
+    suspend fun generateSingleQuestion(title: String, context: String): String {
+        val prompt = """
+            Generate exactly 1 multiple choice question for the book "$title" based on this context: $context.
+            Return ONLY a valid JSON object. No other text.
+            Format:
+            {
+              "questions": [
+                {
+                  "question": "Question text here?",
+                  "options": ["Option 1", "Option 2", "Option 3", "Option 4"],
+                  "correct_answer": "Exact text of the correct option"
+                }
+              ]
+            }
+        """.trimIndent()
+        
+        val response = generateAnswer(prompt)
+        return extractJson(response)
+    }
+
+    suspend fun expandDescription(title: String, author: String, currentDesc: String, genre: List<String>): String {
+        val prompt = "Expand book description for '$title' by $author into a detailed narrative (~800 words). Genres: ${genre.joinToString()}. Original: $currentDesc."
+        return generateAnswer(prompt)
+    }
+
+    private suspend fun generateRawContent(prompt: String, retryCount: Int = 0): String {
+        if (retryCount > 2) return ""
+        val json = JsonObject().apply {
+            add("contents", JsonArray().apply {
+                add(JsonObject().apply {
+                    addProperty("role", "user")
+                    add("parts", JsonArray().apply { add(JsonObject().apply { addProperty("text", prompt) }) })
+                })
+            })
+        }
+        val body = json.toString().toRequestBody("application/json".toMediaTypeOrNull())
+        val url = "https://generativelanguage.googleapis.com/v1beta/models/${Constants.GEMINI_MODEL}:generateContent?key=${Constants.GEMINI_API_KEY}"
 
         return try {
-            client.newCall(request).execute().use { response ->
-                val responseBody = response.body?.string() ?: ""
+            client.newCall(Request.Builder().url(url).post(body).build()).execute().use { response ->
+                val bodyStr = response.body?.string() ?: ""
+                if (response.code == 429) {
+                    delay(3000)
+                    return generateRawContent(prompt, retryCount + 1)
+                }
                 if (response.isSuccessful) {
-                    val root = JsonParser.parseString(responseBody).asJsonObject
-                    root.getAsJsonArray("candidates")[0]
-                        .asJsonObject.getAsJsonObject("content")
-                        .getAsJsonArray("parts")[0]
-                        .asJsonObject.get("text").asString
+                    val root = JsonParser.parseString(bodyStr).asJsonObject
+                    val candidates = root.getAsJsonArray("candidates")
+                    if (candidates != null && candidates.size() > 0) {
+                        val firstCandidate = candidates[0].asJsonObject
+                        val content = firstCandidate.getAsJsonObject("content")
+                        if (content != null) {
+                            val parts = content.getAsJsonArray("parts")
+                            if (parts != null && parts.size() > 0) {
+                                val text = parts[0].asJsonObject.get("text").asString
+                                return@use text.trim()
+                            }
+                        }
+                    }
+                    Log.e("GeminiClient", "No content found in successful response: $bodyStr")
+                    ""
                 } else {
-                    "Error: ${response.code}"
+                    Log.e("GeminiClient", "API call failed with code ${response.code}: ${response.message}")
+                    ""
                 }
             }
+        } catch (e: Exception) { "" }
+    }
+
+    private fun extractJson(text: String): String {
+        try {
+            var cleaned = text.trim()
+
+            // 1. Handle common Gemini/LLM markdown formatting
+            if (cleaned.contains("```")) {
+                cleaned = when {
+                    cleaned.contains("```json") -> cleaned.substringAfter("```json").substringBeforeLast("```")
+                    cleaned.contains("```JSON") -> cleaned.substringAfter("```JSON").substringBeforeLast("```")
+                    else -> cleaned.substringAfter("```").substringBeforeLast("```")
+                }
+            }
+
+            // 2. Locate the outermost JSON structure (object or array)
+            val startObject = cleaned.indexOf("{")
+            val startArray = cleaned.indexOf("[")
+            
+            val start = when {
+                startObject != -1 && startArray != -1 -> Math.min(startObject, startArray)
+                startObject != -1 -> startObject
+                startArray != -1 -> startArray
+                else -> -1
+            }
+
+            val endObject = cleaned.lastIndexOf("}")
+            val endArray = cleaned.lastIndexOf("]")
+            
+            val end = when {
+                endObject != -1 && endArray != -1 -> Math.max(endObject, endArray)
+                endObject != -1 -> endObject
+                endArray != -1 -> endArray
+                else -> -1
+            }
+
+            if (start != -1 && end != -1 && end > start) {
+                val jsonCandidate = cleaned.substring(start, end + 1).trim()
+                
+                // 3. Final validation: Try parsing it with JsonParser to ensure it's valid JSON
+                return try {
+                    JsonParser.parseString(jsonCandidate)
+                    jsonCandidate
+                } catch (e: Exception) {
+                    Log.e("GeminiClient", "Extracted text is not valid JSON: $jsonCandidate")
+                    ""
+                }
+            }
+            
+            // 4. Fallback: Check if the whole cleaned text is valid JSON
+            return try {
+                JsonParser.parseString(cleaned)
+                cleaned
+            } catch (e: Exception) {
+                Log.e("GeminiClient", "No JSON found in response: $text")
+                ""
+            }
         } catch (e: Exception) {
-            "Error: ${e.message}"
+            Log.e("GeminiClient", "Error extracting JSON: ${e.message}")
+            return ""
         }
     }
 }

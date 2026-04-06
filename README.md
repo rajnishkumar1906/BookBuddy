@@ -1,249 +1,148 @@
-# 📚 BookBuddy - AI Library Management App
+# 📚 BookBuddy: AI-Driven Library Ecosystem
 
-A modern Android app for digital library operations with role-based access, smart semantic search, and AI-assisted book interactions.
-
----
-
-## 🚀 Features
-
-### 👩‍💼 For Librarians
-- 📊 **Dashboard Insights** - Live counters for books and members
-- 📁 **CSV Bulk Upload** - Import large book datasets from CSV
-- 🧠 **Auto Embeddings** - Generate vector embeddings while uploading
-- 📄 **Sample CSV Download** - Export ready-to-use sample template
-
-### 👨‍🎓 For Members
-- 🔍 **AI Search** - Natural-language search over your catalog
-- 📚 **Browse + Detail View** - Rich book cards and detailed pages
-- 📥 **Borrow Book Flow** - 14-day due-date borrow records
-- ⭐ **Book Ratings** - Submit ratings and update average score
-
-### 🤖 AI Layer
-- 🧭 **Semantic Matching** with cosine similarity
-- ✨ **AI Summaries** using Hugging Face + Gemini fallback
-- 🧩 **Context-Aware Q&A** (RAG-style chunk retrieval)
-- 📝 **Auto Description Expansion** for short descriptions
+**BookBuddy** is a sophisticated, high-tech Android application designed to transform traditional library management into an intelligent, interactive experience. Built for classroom and institutional use, it leverages cutting-edge Generative AI and Retrieval-Augmented Generation (RAG) to make book discovery and interaction seamless.
 
 ---
 
-## 📱 App Screens (Suggested)
+## 📐 High-Level System Architecture (HLD)
 
-| Librarian Dashboard | CSV Upload Dialog | Member Dashboard |
-| --- | --- | --- |
-| `assets/screens/librarian-dashboard.png` | `assets/screens/csv-upload.png` | `assets/screens/member-dashboard.png` |
+The following diagram illustrates how BookBuddy integrates local mobile features with powerful cloud AI services:
 
-| AI Search | Book Detail | AI Chat Mode |
-| --- | --- | --- |
-| `assets/screens/ai-search.png` | `assets/screens/book-detail.png` | `assets/screens/book-chat.png` |
+```mermaid
+graph TD
+    User((User)) -->|Voice/Text| UI[Android App UI]
+    
+    subgraph "Local Intelligence (Android)"
+        UI -->|Rendering| Canvas[Canvas API: Dynamic Visualizers]
+        UI -->|Storage| Room[(Room SQL: Local Chat & Profile)]
+        UI -->|Monitoring| Sensors[Sensor Logic: Eye Health & Posture]
+        UI -->|Tasks| WorkManager[WorkManager: Background Sync & Upload]
+    end
 
-> Add real screenshots in an `assets/screens/` folder and update these paths.
+    subgraph "AI Core Layer"
+        UI -->|Embedding| HF[Hugging Face API: Vector Generation]
+        HF -->|Vectors| LocalRank[Local Cosine Similarity Ranking]
+        UI -->|Chat/Summary| LLM[Gemini 1.5 Flash / Mistral Fallback]
+    end
+
+    subgraph "Cloud Backend"
+        UI -->|Auth| Auth[Firebase Auth]
+        UI -->|Sync| Realtime[(Firebase Realtime DB)]
+        Room <-->|Cache Sync| Realtime
+    end
+    
+    LocalRank -->|Search Results| UI
+    LLM -->|Conversational Output| UI
+```
 
 ---
 
-## 🛠️ Tech Stack
+## 🚀 Key Intelligent Features
 
-### Android
-- **Language:** Kotlin
-- **UI:** XML + Material Components
-- **Min SDK:** 24
-- **Compile SDK:** 36
-- **Architecture:** Activity/Fragment modular flow
+### 1. AI Semantic Search (Beyond Keywords)
+Traditional search looks for exact words. BookBuddy understands **meaning**.
+- **Vectorization**: Every book is converted into a 384-dimensional mathematical vector using Hugging Face's `all-MiniLM-L6-v2` model.
+- **Local-First AI**: To optimize cost and privacy, embeddings are generated and stored **locally** on the device via [BookSyncWorker.kt](file:///d:/bookbuddy/app/src/main/java/com/rajnishkumar/bookbuddy/worker/BookSyncWorker.kt).
+- **Conceptual Matching**: Uses **Cosine Similarity** in [AISearchHelper.kt](file:///d:/bookbuddy/app/src/main/java/com/rajnishkumar/bookbuddy/ai/AISearchHelper.kt) to find books with matching themes, even without keyword overlap.
 
-### Backend
-- **Authentication:** Firebase Auth
-- **Database:** Firebase Realtime Database
+### 2. Vocal Robo Assistant (Voice RAG)
+A dedicated hands-free interface for book discovery.
+- **Natural Conversation**: Speak naturally to the Robo in [VocalRoboFragment.kt](file:///d:/bookbuddy/app/src/main/java/com/rajnishkumar/bookbuddy/ui/dashboard/VocalRoboFragment.kt). It uses **Mistral-7B** for intent classification and **Gemini** for conversational responses.
+- **Vocal Delivery**: Features real-time voice synthesis and synchronized ripple animations via [VoiceRippleView.kt](file:///d:/bookbuddy/app/src/main/java/com/rajnishkumar/bookbuddy/ui/canvas/VoiceRippleView.kt).
 
-### AI + Networking
-- **Embeddings & LLM APIs:** Hugging Face Inference
-- **Summaries & Expansion:** Gemini API
-- **HTTP Client:** OkHttp
-- **JSON:** Gson
-- **Async:** Coroutines
-- **Image Loading:** Glide
-- **CSV Parser:** OpenCSV
+### 3. Interactive Book Chat (Real RAG)
+Don't just read about a book—talk to it.
+- **On-Demand Chunking**: Descriptions are split into relevant sentences only when needed to save memory in [RagService.kt](file:///d:/bookbuddy/app/src/main/java/com/rajnishkumar/bookbuddy/ai/RagService.kt).
+- **Contextual Q&A**: Uses a specialized RAG pipeline to answer questions based *only* on the book's context.
+- **AI Quizzes**: Generates dynamic multiple-choice questions (MCQs) using [GeminiClient.kt](file:///d:/bookbuddy/app/src/main/java/com/rajnishkumar/bookbuddy/ai/GeminiClient.kt) to test reader comprehension.
+
+### 4. Efficient Bulk Management
+Designed for librarians to manage large collections.
+- **Smart CSV Upload**: Supports bulk importing thousands of books using [BulkUploadHelper.kt](file:///d:/bookbuddy/app/src/main/java/com/rajnishkumar/bookbuddy/ai/BulkUploadHelper.kt) and [BookUploadWorker.kt](file:///d:/bookbuddy/app/src/main/java/com/rajnishkumar/bookbuddy/worker/BookUploadWorker.kt).
+- **Sync Tracker**: Uses a global timestamp on Firebase to trigger automatic data synchronization across all member devices.
+
+### 5. Secure Authentication & UX
+Modern, user-friendly security features.
+- **Google Sign-In**: One-tap authentication using Android Credential Manager.
+- **Self-Service Password Reset**: Secure Firebase-powered "Forgot Password" flow with automated email recovery.
+- **Welcome Notifications**: Proactive, high-priority push notifications that greet users upon successful signup or login, providing a warm onboarding experience.
+
+---
+
+## 🎨 Premium UI & Health Integration
+
+- **Custom Canvas Visualizers**: 
+    - **Home**: [LibraryCanvasView.kt](file:///d:/bookbuddy/app/src/main/java/com/rajnishkumar/bookbuddy/ui/canvas/LibraryCanvasView.kt) with floating 3D books and shimmering stars.
+    - **Analytics**: [GenreBubbleCanvasView.kt](file:///d:/bookbuddy/app/src/main/java/com/rajnishkumar/bookbuddy/ui/canvas/GenreBubbleCanvasView.kt) and [GenreBarGraphView.kt](file:///d:/bookbuddy/app/src/main/java/com/rajnishkumar/bookbuddy/ui/canvas/GenreBarGraphView.kt) for interactive data storytelling.
+    - **AI Search**: [AISearchVisualizerView.kt](file:///d:/bookbuddy/app/src/main/java/com/rajnishkumar/bookbuddy/ui/canvas/AISearchVisualizerView.kt) with pulse and node animations.
+- **Wellness Sensors (BaseActivity)**: 
+    - **Proximity**: Warns if the screen is too close to the eyes via [BaseActivity.kt](file:///d:/bookbuddy/app/src/main/java/com/rajnishkumar/bookbuddy/ui/sensor/BaseActivity.kt).
+    - **Accelerometer**: Detects poor reading angles (tilt > 80°) to prevent "tech-neck."
+    - **Usage Tracking**: Automatic "Take a Break" alerts after 30 minutes of continuous use via [UsageTracker.kt](file:///d:/bookbuddy/app/src/main/java/com/rajnishkumar/bookbuddy/ui/sensor/UsageTracker.kt).
+- **Global Branding**: A consistent primary-colored UI border applied via a custom `BaseActivity` wrapper.
+
+---
+
+## 🛠️ Technical Stack
+
+| Component | Technology |
+| :--- | :--- |
+| **Language** | Kotlin + Coroutines + KSP |
+| **Database** | Firebase Realtime DB + Room SQL |
+| **AI Models** | Gemini 1.5 Flash, Mistral-7B (Intent), BART-Large (Summarization) |
+| **Embeddings** | all-MiniLM-L6-v2 (Hugging Face Inference) |
+| **Vision** | Google ML Kit (Barcode/ISBN) + CameraX |
+| **UI Framework** | Material 3 + Custom Canvas API |
+| **Background** | WorkManager (Sync & Bulk Upload) |
 
 ---
 
 ## 📁 Project Structure
 
-```text
-app/src/main/java/com/rajnishkumar/bookbuddy/
-│
-├── AuthActivity.kt
-├── SplashActivity.kt
-├── LoginFragment.kt
-├── SignupFragment.kt
-├── LibrarianDashboard.kt
-├── MemberDashboard.kt
-├── AISearchActivity.kt
-├── BookDetailActivity.kt
-├── Constants.kt
-│
-├── ai/
-│   ├── AISearchHelper.kt
-│   ├── BulkUploadHelper.kt
-│   ├── HuggingFaceClient.kt
-│   └── GeminiClient.kt
-│
-└── models/
-    ├── Book.kt
-    └── BorrowRecord.kt
-```
+- `ai/`: Core logic for [GeminiClient.kt](file:///d:/bookbuddy/app/src/main/java/com/rajnishkumar/bookbuddy/ai/GeminiClient.kt), [HuggingFaceClient.kt](file:///d:/bookbuddy/app/src/main/java/com/rajnishkumar/bookbuddy/ai/HuggingFaceClient.kt), and [AISearchHelper.kt](file:///d:/bookbuddy/app/src/main/java/com/rajnishkumar/bookbuddy/ai/AISearchHelper.kt).
+- `database/`: [AppDatabase.kt](file:///d:/bookbuddy/app/src/main/java/com/rajnishkumar/bookbuddy/database/AppDatabase.kt) and DAOs for local caching.
+- `models/`: Unified data models like [Book.kt](file:///d:/bookbuddy/app/src/main/java/com/rajnishkumar/bookbuddy/models/Book.kt) and [QuizModels.kt](file:///d:/bookbuddy/app/src/main/java/com/rajnishkumar/bookbuddy/models/QuizModels.kt).
+- `ui/canvas/`: High-performance custom views for animations and charts.
+- `ui/sensor/`: [BaseActivity.kt](file:///d:/bookbuddy/app/src/main/java/com/rajnishkumar/bookbuddy/ui/sensor/BaseActivity.kt) and [UsageTracker.kt](file:///d:/bookbuddy/app/src/main/java/com/rajnishkumar/bookbuddy/ui/sensor/UsageTracker.kt) for health-centric features.
+- `worker/`: Background processing for data synchronization.
 
 ---
 
-## 🗄️ Database Schema (Realtime DB)
+## ⚙️ Developer Setup
 
-### `users/{userId}`
-```json
-{
-  "id": "uid_123",
-  "name": "Rajnish Kumar",
-  "email": "user@example.com",
-  "role": "member"
-}
-```
+To get BookBuddy running locally, follow these steps:
 
-### `books/{bookId}`
-```json
-{
-  "id": "book_123",
-  "title": "Atomic Habits",
-  "author": "James Clear",
-  "genre": "Self-Help, Productivity",
-  "genreList": ["Self-Help", "Productivity"],
-  "description": "...",
-  "summary": "...",
-  "isbn": "9780735211292",
-  "coverUrl": "https://...",
-  "totalCopies": 1,
-  "availableCopies": 1,
-  "embedding": [0.01, -0.05, "..."],
-  "averageRating": 4.6,
-  "totalRatings": 89,
-  "addedAt": 1700000000000,
-  "addedBy": "uid_123"
-}
-```
+### 1. Prerequisites
+- Android Studio Ladybug or newer.
+- A Firebase project with **Realtime Database** and **Auth** enabled.
+- API keys for **Google Gemini** and **Hugging Face**.
 
-### `borrowRecords/{recordId}`
-```json
-{
-  "id": "br_123",
-  "bookId": "book_123",
-  "userId": "uid_456",
-  "bookTitle": "Atomic Habits",
-  "bookAuthor": "James Clear",
-  "bookCoverUrl": "https://...",
-  "borrowDate": 1700000000000,
-  "dueDate": 1701209600000,
-  "status": "BORROWED"
-}
-```
+### 2. Configuration
+1. **Firebase**: Add your `google-services.json` to the `app/` directory.
+2. **API Keys**: Open [Constants.kt](file:///d:/bookbuddy/app/src/main/java/com/rajnishkumar/bookbuddy/common/Constants.kt) and update:
+   ```kotlin
+   const val HUGGINGFACE_TOKEN = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+   const val GEMINI_API_KEY = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+   ```
+3. **Database Rules**: Ensure Firebase rules allow authenticated read/write.
+4. **Google Sign-In**: 
+   - Enable **Google** as a Sign-in provider in the Firebase Console.
+   - Add your **SHA-1** fingerprint to the project settings.
+   - Configure the **OAuth Consent Screen** in the [Google Cloud Console](https://console.cloud.google.com/apis/credentials/consent). You only need to provide an "App name", "User support email", and "Developer contact info".
+   - Download the updated `google-services.json` and place it in the `app/` directory.
 
----
-
-## 🔧 Setup Guide
-
-### 1) Prerequisites
-- Android Studio (latest stable)
-- JDK 11+
-- Android SDK 24+
-- Firebase Project
-
-### 2) Clone
-```bash
-git clone https://github.com/rajnishkumar1906/BookBuddy.git
-cd BookBuddy
-```
-
-### 3) Firebase setup
-1. Create project in Firebase Console  
-2. Add Android app package: `com.rajnishkumar.bookbuddy`  
-3. Download `google-services.json` into `app/`  
-4. Enable Email/Password auth  
-5. Enable Realtime Database  
-
-### 4) API keys
-Use secure local config (recommended) and avoid hardcoding tokens.
-
-### 5) Build
-```bash
-./gradlew build
-./gradlew installDebug
-```
-
----
-
-## 📥 CSV Import Format
-
-The current parser reads columns in this order:
-1. ISBN
-2. Title
-3. Author
-4. Genres
-5. Description
-6. (unused)
-7. Cover URL
-
-### Sample row
-```csv
-9780141439518,Pride and Prejudice,Jane Austen,Classic,Love and social expectations,,https://example.com/cover.jpg
-```
-
----
-
-## 🎯 AI Search Workflow
-
-1. Convert user query to embedding  
-2. Compare against stored book embeddings  
-3. Rank by cosine similarity  
-4. Return top matching books in UI  
-
----
-
-## 🔐 Security Notes
-
-- Never commit real API keys/tokens in source code
-- Restrict Firebase rules before production
-- Use role checks for librarian-only operations
-
----
-
-## 🧪 Current Build Status
-
-### Implemented
-- Auth + role routing
-- Librarian/member dashboards
-- CSV import with embeddings
-- AI search + detail screen
-- Borrow + rating flow
-- AI summary and chat features
-
-### Planned / Placeholder UI
-- Add Book
-- Manage Books
-- Full Stats
-- My Books screen
-- Profile screen
+### 3. Build & Run
+- Sync Gradle and run on API 24+.
+- Includes full support for **16KB page sizes** (Android 15+).
 
 ---
 
 ## 🤝 Contributing
 
-1. Fork the repo  
-2. Create feature branch  
-3. Commit changes  
-4. Push branch  
-5. Open PR  
+Contributions are welcome! Please fork, create a feature branch, and open a Pull Request.
 
 ---
 
-## 👤 Author
+## 📄 License
 
-- **Rajnish Kumar**
-- GitHub: [rajnishkumar1906](https://github.com/rajnishkumar1906)
-
----
-
-Made with care for readers, librarians, and builders.
+MIT License - see the LICENSE file for details.

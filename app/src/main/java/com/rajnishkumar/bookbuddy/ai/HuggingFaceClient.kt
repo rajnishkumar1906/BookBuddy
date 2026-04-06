@@ -1,21 +1,17 @@
 package com.rajnishkumar.bookbuddy.ai
 
 import android.util.Log
-import com.google.gson.JsonElement
+import com.google.gson.JsonObject
 import com.google.gson.JsonParser
-import com.rajnishkumar.bookbuddy.Constants
+import com.rajnishkumar.bookbuddy.common.Constants
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import java.io.IOException
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.util.concurrent.TimeUnit
 
 class HuggingFaceClient {
-
-    companion object {
-        private const val TAG = "HuggingFaceClient"
-        private const val SUMMARIZATION_URL = "https://router.huggingface.co/hf-inference/models/facebook/bart-large-cnn"
-        private const val CHAT_MODEL_URL = "https://router.huggingface.co/hf-inference/models/mistralai/Mistral-7B-Instruct-v0.2"
-    }
 
     private val client: OkHttpClient by lazy {
         OkHttpClient.Builder()
@@ -28,81 +24,112 @@ class HuggingFaceClient {
 
     private class AuthInterceptor : Interceptor {
         override fun intercept(chain: Interceptor.Chain): Response {
-            val request = chain.request()
-            return chain.proceed(request.newBuilder()
-                .header("Authorization", "Bearer ${Constants.HUGGINGFACE_TOKEN}")
-                .header("Content-Type", "application/json")
-                .build())
+            return chain.proceed(
+                chain.request().newBuilder()
+                    .header("Authorization", "Bearer ${Constants.HUGGINGFACE_TOKEN}")
+                    .header("Content-Type", "application/json")
+                    .build()
+            )
         }
     }
 
-    suspend fun getEmbedding(text: String): List<Double> = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
-        val requestBody = RequestBody.create("application/json".toMediaTypeOrNull(), 
-            "{\"inputs\": \"${escapeJson(text)}\", \"options\": {\"wait_for_model\": true}}")
-        val request = Request.Builder().url(Constants.HUGGINGFACE_API_URL).post(requestBody).build()
-        try {
-            client.newCall(request).execute().use { response ->
-                val body = response.body?.string() ?: ""
-                if (!response.isSuccessful) return@withContext emptyList()
-                flattenResponse(body)
-            }
-        } catch (e: Exception) { emptyList() }
-    }
-
-    suspend fun summarizeText(text: String): String = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
-        val requestBody = RequestBody.create("application/json".toMediaTypeOrNull(),
-            "{\"inputs\": \"${escapeJson(text)}\", \"parameters\": {\"max_length\": 150, \"min_length\": 40}}")
-        val request = Request.Builder().url(SUMMARIZATION_URL).post(requestBody).build()
-        try {
-            client.newCall(request).execute().use { response ->
-                val body = response.body?.string() ?: ""
-                if (response.isSuccessful) JsonParser.parseString(body).asJsonArray[0].asJsonObject.get("summary_text").asString
-                else "Summary unavailable."
-            }
-        } catch (e: Exception) { "Summary error." }
-    }
-
     /**
-     * Real RAG Chat: Sends Context + History + New Question
+     * Enhanced Classification with wider keyword support and descriptive AI prompting.
      */
-    suspend fun chatWithBook(context: String, history: String, question: String): String = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+    suspend fun classifyQuery(query: String): String = withContext(Dispatchers.IO) {
+        val q = query.lowercase().trim()
+        val words = q.split(Regex("\\s+")).toSet()
+
+        // 1. ADVANCED LOCAL KEYWORD MATCHING
+        val greetings = setOf("hi", "hello", "hey", "morning", "howdy", "anyone", "yo", "sup", "greetings", "hii")
+        if (words.any { greetings.contains(it) }) return@withContext "GREETING"
+
+        val appreciation = setOf("thanks", "thank", "great", "awesome", "nice", "good", "helpful", "amazing", "perfect", "wow", "brilliant")
+        if (words.any { appreciation.contains(it) } || q.contains("thank you")) return@withContext "APPRECIATION"
+
+        val practice = setOf("quiz", "test", "questions", "practice", "mcq", "exam", "challenge", "queisosn", "qestions", "quizz", "evaluate")
+        if (words.any { practice.contains(it) } || q.contains("ask me") || q.contains("test me") || q.contains("quiz me")) return@withContext "PRACTICE"
+
+        val rejections = setOf("no", "stop", "cancel", "later", "skip", "nevermind", "exit", "enough", "don't", "dont")
+        if (words.any { rejections.contains(it) } || q.contains("not now") || q.contains("no thanks")) return@withContext "REJECTION"
+
+        // 2. DESCRIPTIVE AI FALLBACK (Using Mistral-7B)
         val prompt = """
-            Context: $context
-            History: $history
-            User: $question
-            Assistant:
+            <s>[INST] You are an expert classifier for a library AI. 
+            Classify the user query into exactly ONE of these categories:
+            
+            - GREETING: Social openers (e.g., "Hi", "How are you?", "Is anyone there?")
+            - APPRECIATION: Positive feedback (e.g., "Thanks!", "This is great", "You helped a lot")
+            - PRACTICE: Requests for quizzes/tests (e.g., "Ask me a question", "I want to practice", "Quiz me on this")
+            - REJECTION: Declining offers (e.g., "No thanks", "Not now", "Stop it", "I don't want a quiz")
+            - QUESTION: Factual queries about book content (e.g., "Who is the hero?", "Explain the plot", "What happened in chapter 2?")
+            
+            User Query: "$query"
+            
+            Reply with ONLY the category name in uppercase. No explanation. [/INST]
         """.trimIndent()
 
-        val requestBody = RequestBody.create("application/json".toMediaTypeOrNull(),
-            "{\"inputs\": \"${escapeJson(prompt)}\", \"parameters\": {\"max_new_tokens\": 250, \"return_full_text\": false}}")
-
-        val request = Request.Builder().url(CHAT_MODEL_URL).post(requestBody).build()
-
         try {
-            client.newCall(request).execute().use { response ->
-                val body = response.body?.string() ?: ""
-                if (response.isSuccessful) {
-                    val json = JsonParser.parseString(body)
-                    if (json.isJsonArray) json.asJsonArray[0].asJsonObject.get("generated_text").asString.trim()
-                    else "I couldn't process that."
-                } else "AI is currently busy."
+            val json = JsonObject().apply {
+                addProperty("inputs", prompt)
+                val parameters = JsonObject().apply {
+                    addProperty("max_new_tokens", 10)
+                    addProperty("return_full_text", false)
+                }
+                add("parameters", parameters)
             }
-        } catch (e: Exception) { "AI Error: ${e.message}" }
+            
+            val request = Request.Builder()
+                .url(Constants.HUGGINGFACE_CHAT_MODEL)
+                .post(json.toString().toRequestBody("application/json".toMediaTypeOrNull()))
+                .build()
+
+            client.newCall(request).execute().use { response ->
+                if (!response.isSuccessful) return@withContext "QUESTION"
+                
+                val responseBody = response.body?.string() ?: ""
+                val element = JsonParser.parseString(responseBody)
+                val generatedText = if (element.isJsonArray) {
+                    element.asJsonArray[0].asJsonObject.get("generated_text").asString
+                } else {
+                    element.asJsonObject.get("generated_text").asString
+                }
+                
+                val result = generatedText.substringAfter("[/INST]").trim().uppercase()
+                
+                when {
+                    result.contains("GREETING") -> "GREETING"
+                    result.contains("APPRECIATION") -> "APPRECIATION"
+                    result.contains("PRACTICE") -> "PRACTICE"
+                    result.contains("REJECTION") -> "REJECTION"
+                    else -> "QUESTION"
+                }
+            }
+        } catch (e: Exception) {
+            Log.e("HuggingFace", "Classification error: ${e.message}")
+            "QUESTION" 
+        }
     }
 
-    private fun flattenResponse(response: String): List<Double> {
-        val jsonElement = JsonParser.parseString(response)
-        val result = mutableListOf<Double>()
-        extractNumbers(jsonElement, result)
-        return if (result.size >= 384) result.take(384) else result
-    }
+    suspend fun getEmbedding(text: String): List<Double> = withContext(Dispatchers.IO) {
+        try {
+            val json = JsonObject().apply { addProperty("inputs", text) }
+            val body = json.toString().toRequestBody("application/json".toMediaTypeOrNull())
+            val request = Request.Builder().url(Constants.HUGGINGFACE_API_URL).post(body).build()
 
-    private fun extractNumbers(element: JsonElement, list: MutableList<Double>) {
-        if (element.isJsonPrimitive && element.asJsonPrimitive.isNumber) list.add(element.asDouble)
-        else if (element.isJsonArray) element.asJsonArray.forEach { extractNumbers(it, list) }
-    }
-
-    private fun escapeJson(text: String): String {
-        return text.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", " ")
+            client.newCall(request).execute().use { response ->
+                if (!response.isSuccessful) return@withContext emptyList()
+                val bodyStr = response.body?.string() ?: ""
+                val element = JsonParser.parseString(bodyStr)
+                if (element.isJsonArray) {
+                    val array = element.asJsonArray
+                    if (array.size() > 0 && array[0].isJsonArray) {
+                        array[0].asJsonArray.map { it.asDouble }
+                    } else {
+                        array.map { it.asDouble }
+                    }
+                } else emptyList()
+            }
+        } catch (e: Exception) { emptyList() }
     }
 }

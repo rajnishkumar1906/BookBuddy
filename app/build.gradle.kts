@@ -2,16 +2,17 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.google.gms.google.services)
+    alias(libs.plugins.ksp)
 }
 
 android {
     namespace = "com.rajnishkumar.bookbuddy"
-    compileSdk = 36
+    compileSdk = 36 // Updated to 36 as required by dependencies
 
     defaultConfig {
         applicationId = "com.rajnishkumar.bookbuddy"
         minSdk = 24
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
 
@@ -26,6 +27,10 @@ android {
                 "proguard-rules.pro"
             )
         }
+        debug {
+            // Ensure 16KB alignment in debug builds
+            isMinifyEnabled = false
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -33,6 +38,17 @@ android {
     }
     kotlinOptions {
         jvmTarget = "11"
+    }
+
+    packaging {
+        jniLibs {
+            // Required for 16KB page size support on Android 15+
+            // This ensures .so files are stored uncompressed and aligned
+            useLegacyPackaging = false
+        }
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
     }
 }
 
@@ -48,6 +64,15 @@ dependencies {
     implementation(libs.googleid)
     implementation(libs.firebase.database)
     
+    // WorkManager
+    implementation(libs.androidx.work.runtime.ktx)
+
+    // Paging 3
+    implementation("androidx.paging:paging-runtime:3.3.2")
+
+    // Fragment KTX for 'by viewModels()'
+    implementation("androidx.fragment:fragment-ktx:1.8.5")
+
     // CSV Parsing
     implementation("com.opencsv:opencsv:5.9")
 
@@ -63,7 +88,22 @@ dependencies {
 
     // Image Loading
     implementation("com.github.bumptech.glide:glide:4.16.0")
-    annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
+    ksp("com.github.bumptech.glide:compiler:4.16.0")
+
+    // ML Kit Barcode Scanning - Using latest version which supports 16KB
+    implementation("com.google.mlkit:barcode-scanning:17.3.0")
+
+    // CameraX
+    val cameraVersion = "1.3.4"
+    implementation("androidx.camera:camera-camera2:$cameraVersion")
+    implementation("androidx.camera:camera-lifecycle:$cameraVersion")
+    implementation("androidx.camera:camera-view:$cameraVersion")
+
+    // Room Database
+    val roomVersion = "2.6.1"
+    implementation("androidx.room:room-runtime:$roomVersion")
+    implementation("androidx.room:room-ktx:$roomVersion")
+    ksp("androidx.room:room-compiler:$roomVersion")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

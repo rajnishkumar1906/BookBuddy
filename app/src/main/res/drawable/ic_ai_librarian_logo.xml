@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Professional Background Shield/Circle -->
+    <path
+        android:fillColor="@color/primary"
+        android:pathData="M54,12C30.8,12 12,30.8 12,54s18.8,42 42,42s42,-18.8 42,-42S77.2,12 54,12z" />
+
+    <!-- Open Book - Symbol of Knowledge -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,74c-8.8,0 -18,-2 -24,-6V32c6,4 15.2,6 24,6s18,-2 24,-6v36C72,72 62.8,74 54,74z" />
+    
+    <!-- Divider Line -->
+    <path
+        android:fillColor="@color/primary"
+        android:pathData="M53,38h2v36h-2z" />
+
+    <!-- Modern "Intelligence" Spark (Subtle AI indicator) -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,24l2,6l6,2l-6,2l-2,6l-2,-6l-6,-2l6,-2z" />
+
+</vector>

@@ -3,127 +3,175 @@ package com.rajnishkumar.bookbuddy.ai
 import android.content.Context
 import android.net.Uri
 import android.util.Log
-import com.opencsv.CSVReader
-import com.rajnishkumar.bookbuddy.models.Book
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlinx.coroutines.withContext
+import com.google.firebase.database.ServerValue
+import com.opencsv.CSVReader
+import com.rajnishkumar.bookbuddy.models.Book
+import com.rajnishkumar.bookbuddy.repository.BookSearchRepository
+import kotlinx.coroutines.*
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
+import kotlinx.coroutines.tasks.await
+import java.io.InputStream
 import java.io.InputStreamReader
-import kotlin.coroutines.resume
+import java.util.concurrent.atomic.AtomicInteger
 
+data class UploadProgress(
+    val total: Int,
+    val completed: Int,
+    val currentBook: String,
+    val status: String,
+    val percentage: Int
+)
+
+data class UploadResult(
+    val success: Int,
+    val failed: Int,
+    val skipped: Int = 0
+)
+
+/**
+ * Librarian Upload Helper:
+ * 1. Uploads book text data to Firebase.
+ * 2. NO EMBEDDINGS stored on Firebase (efficient).
+ * 3. Updates 'sync_tracker' so user devices know new data is available.
+ */
 class BulkUploadHelper(private val context: Context) {
 
     private val database = FirebaseDatabase.getInstance().reference
-    private val huggingFace = HuggingFaceClient()
     private val auth = FirebaseAuth.getInstance()
-    private val TAG = "BulkUploadHelper"
+    private val tag = "BulkUploadHelper"
 
-    data class UploadProgress(
-        val total: Int,
-        val completed: Int,
-        val currentBook: String,
-        val status: String,
-        val percentage: Int
-    )
+    suspend fun saveBook(originalBook: Book): Result<Int> = withContext(Dispatchers.IO) {
+        try {
+            val bookNumber = getNextAvailableBookNumber()
+            saveBookToFirebase(originalBook, bookNumber)
+            Result.success(bookNumber)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 
-    data class UploadResult(
-        val success: Int,
-        val failed: Int
-    )
+    private suspend fun saveBookToFirebase(originalBook: Book, bookNumber: Int) {
+        val bookId = "book_$bookNumber"
+        val timestamp = System.currentTimeMillis()
+
+        val preparedBook = originalBook.copy(
+            id = bookId,
+            bookNumber = bookNumber,
+            addedAt = timestamp,
+            updatedAt = timestamp,
+            addedBy = auth.currentUser?.uid ?: "admin",
+            searchTitle = originalBook.title.lowercase().trim(),
+            searchAuthor = originalBook.author.lowercase().trim(),
+            searchKeywords = "${originalBook.title} ${originalBook.author} ${originalBook.genre.joinToString(" ")}".lowercase(),
+            embedding = emptyList() // We do NOT store vectors on Firebase anymore
+        )
+
+        // 1. Save Book Data
+        database.child("books").child(bookId).setValue(preparedBook).await()
+
+        // 2. Update Sync Tracker (Global)
+        // This tells every user's phone: "Something changed at this time"
+        database.child("sync_tracker").child("last_update").setValue(ServerValue.TIMESTAMP).await()
+    }
 
     suspend fun uploadBooksFromCSV(
         uri: Uri,
         onProgress: (UploadProgress) -> Unit
     ): UploadResult = withContext(Dispatchers.IO) {
-
         try {
-            val inputStream = context.contentResolver.openInputStream(uri)
-                ?: throw Exception("Cannot open file")
-
-            val books = parseCSV(inputStream)
+            val inputStream = context.contentResolver.openInputStream(uri) ?: throw Exception("File error")
+            val allParsedBooks = parseCSV(inputStream)
             inputStream.close()
 
-            val total = books.size
-            var completed = 0
-            var failed = 0
-            val userId = auth.currentUser?.uid ?: "unknown"
+            if (allParsedBooks.isEmpty()) return@withContext UploadResult(0, 0, 0)
 
-            for ((index, book) in books.withIndex()) {
-                val percentage = ((index + 1) * 100 / total)
+            val existingSnap = database.child("books").get().await()
+            val existingIsbns = existingSnap.children.mapNotNull { 
+                it.child("isbn").getValue(String::class.java)?.trim() 
+            }.filter { it.isNotEmpty() }.toSet()
 
-                onProgress(UploadProgress(total, completed, book.title, "📖 Processing: ${book.title}", percentage))
+            val booksToUpload = allParsedBooks.filter { 
+                it.isbn.isBlank() || !existingIsbns.contains(it.isbn.trim()) 
+            }
+            val skippedCount = allParsedBooks.size - booksToUpload.size
 
-                try {
-                    // --- AI: Embedding ---
-                    val textForEmbedding = "${book.title} ${book.author} ${book.genre} ${book.description.take(500)}"
-                    onProgress(UploadProgress(total, completed, book.title, "🧠 AI embedding...", percentage))
-                    val embedding = huggingFace.getEmbedding(textForEmbedding)
-                    if (embedding.isNotEmpty()) book.embedding = embedding
+            if (booksToUpload.isEmpty()) return@withContext UploadResult(0, 0, skippedCount)
 
-                    book.addedAt = System.currentTimeMillis()
-                    book.addedBy = userId
+            val total = booksToUpload.size
+            val completed = AtomicInteger(0)
+            val failed = AtomicInteger(0)
+            
+            var currentNum = getNextAvailableBookNumber()
+            val semaphore = Semaphore(10) // Fast upload since no AI calls
 
-                    // --- Save ---
-                    val bookRef = database.child("books").push()
-                    book.id = bookRef.key ?: ""
-
-                    val saveResult = suspendCancellableCoroutine<Boolean> { cont ->
-                        bookRef.setValue(book).addOnCompleteListener { task ->
-                            if (cont.isActive) cont.resume(task.isSuccessful)
+            coroutineScope {
+                booksToUpload.forEachIndexed { index, book ->
+                    val myNumber = currentNum++ 
+                    launch {
+                        semaphore.withPermit {
+                            try {
+                                if (index % 10 == 0) {
+                                    updateProgress(onProgress, total, completed.get(), book.title, "Uploading...", (index * 100) / total)
+                                }
+                                saveBookToFirebase(book, myNumber)
+                                completed.incrementAndGet()
+                            } catch (e: Exception) {
+                                failed.incrementAndGet()
+                            }
                         }
                     }
-
-                    if (saveResult) completed++ else failed++
-
-                } catch (e: Exception) {
-                    failed++
-                    Log.e(TAG, "Error: ${book.title}", e)
                 }
             }
-            UploadResult(completed, failed)
+
+            UploadResult(completed.get(), failed.get(), skippedCount)
         } catch (e: Exception) {
-            UploadResult(0, 0)
+            Log.e(tag, "Bulk upload failed", e)
+            UploadResult(0, 0, 0)
         }
     }
 
-    private fun parseCSV(inputStream: java.io.InputStream): List<Book> {
+    private suspend fun updateProgress(onProgress: (UploadProgress) -> Unit, total: Int, completed: Int, currentBook: String, status: String, percentage: Int) {
+        withContext(Dispatchers.Main) { onProgress(UploadProgress(total, completed, currentBook, status, percentage)) }
+    }
+
+    private suspend fun getNextAvailableBookNumber(): Int {
+        val maxSnapshot = database.child("books").orderByChild("bookNumber").limitToLast(1).get().await()
+        return if (maxSnapshot.exists()) {
+            val last = maxSnapshot.children.first().getValue(Book::class.java)
+            (last?.bookNumber ?: 1000) + 1
+        } else 1001
+    }
+
+    private fun parseCSV(inputStream: InputStream): List<Book> {
         val books = mutableListOf<Book>()
-        try {
-            val reader = CSVReader(InputStreamReader(inputStream))
-            reader.readNext() // header
-            var line: Array<String>?
-            while (reader.readNext().also { line = it } != null) {
-                line?.let {
-                    val title = it.getOrNull(1)?.trim() ?: ""
-                    val author = it.getOrNull(2)?.trim() ?: ""
-                    val genreString = it.getOrNull(3)?.trim() ?: ""
-                    val description = it.getOrNull(4)?.trim() ?: ""
-                    val coverUrl = it.getOrNull(6)?.trim() ?: ""
-                    val isbn = it.getOrNull(0)?.trim() ?: ""
-
-                    // Genre Parsing: "Bio, History" -> ["Bio", "History"]
-                    val genres = genreString.split(",")
-                        .map { g -> g.trim() }
-                        .filter { g -> g.isNotEmpty() }
-                        .distinct()
-
-                    if (title.isNotEmpty() && author.isNotEmpty()) {
-                        books.add(Book(
-                            title = title,
-                            author = author,
-                            genre = genres.take(2).joinToString(", "), // Primary genres for display
-                            genreList = genres, // All genres for filtering
-                            description = description,
-                            isbn = isbn,
-                            coverUrl = coverUrl
-                        ))
-                    }
+        val reader = CSVReader(InputStreamReader(inputStream))
+        reader.readNext() 
+        var line: Array<String>?
+        while (reader.readNext().also { line = it } != null) {
+            line?.let {
+                val title = it.getOrNull(1)?.trim() ?: ""
+                val author = it.getOrNull(2)?.trim() ?: ""
+                if (title.isNotEmpty() && author.isNotEmpty()) {
+                    books.add(Book(
+                        title = title,
+                        author = author,
+                        genre = parseGenreList(it.getOrNull(3) ?: ""),
+                        description = it.getOrNull(4) ?: "",
+                        isbn = it.getOrNull(0) ?: "",
+                        coverUrl = it.getOrNull(6) ?: ""
+                    ))
                 }
             }
-            reader.close()
-        } catch (e: Exception) {}
+        }
         return books
     }
+
+    private fun parseGenreList(genreString: String): List<String> {
+        return genreString.replace("[", "").replace("]", "").replace("'", "").split(",").map { it.trim() }.filter { it.isNotEmpty() }
+    }
+
+    fun getSampleCSV(): String = "ISBN,Title,Author,Genre,Description,Rating,CoverUrl\n97801,Sample,Author,\"['Fiction']\",Desc,4.5,url"
 }

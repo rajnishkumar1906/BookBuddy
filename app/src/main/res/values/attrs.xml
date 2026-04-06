@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="FloatingBookVisualizerView">
+        <attr name="numBubbles" format="integer" />
+        <attr name="bubbleColor" format="color" />
+    </declare-styleable>
+</resources>

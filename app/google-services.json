@@ -1,39 +1,11 @@
 {
   "project_info": {
     "project_number": "571924025862",
+    "firebase_url": "https://bookbuddy-444d4-default-rtdb.firebaseio.com",
     "project_id": "bookbuddy-444d4",
     "storage_bucket": "bookbuddy-444d4.firebasestorage.app"
   },
   "client": [
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:571924025862:android:d652000d7d4d9dd56b2987",
-        "android_client_info": {
-          "package_name": "com.example.bookbuddy"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "571924025862-03i5kdv512mpdmpm1hthbispv1grrbju.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyAU9EjJRXygVRc0cnXanjpNRru1sE4qKWU"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "571924025862-03i5kdv512mpdmpm1hthbispv1grrbju.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
     {
       "client_info": {
         "mobilesdk_app_id": "1:571924025862:android:a5b81d702835df2c6b2987",
@@ -42,6 +14,14 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "571924025862-u6hqucpqcp2196tm7pg4qqk47bji4hic.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.rajnishkumar.bookbuddy",
+            "certificate_hash": "ff0981e3c0cc761c8605f408745e20b8333bf8f6"
+          }
+        },
         {
           "client_id": "571924025862-03i5kdv512mpdmpm1hthbispv1grrbju.apps.googleusercontent.com",
           "client_type": 3

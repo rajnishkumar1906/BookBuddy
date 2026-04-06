@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:attr/colorBackground"
+    tools:context=".ui.book.SearchFragment">
+
+    <!-- Canvas Visualizer Background (Low Alpha for subtlety) -->
+    <com.rajnishkumar.bookbuddy.ui.canvas.AISearchVisualizerView
+        android:id="@+id/searchVisualizer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0.2" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Search Bar -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="28dp"
+            app:cardElevation="4dp"
+            android:layout_marginBottom="16dp"
+            app:cardBackgroundColor="?attr/colorSurface">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="4dp"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginStart="16dp"
+                    android:src="@drawable/ic_search"
+                    app:tint="@color/primary" />
+
+                <EditText
+                    android:id="@+id/etSearchQuery"
+                    android:layout_width="0dp"
+                    android:layout_height="56dp"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:hint="Ask me anything... 🤖"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:textSize="16sp"
+                    android:imeOptions="actionSearch"
+                    android:inputType="text"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textColorHint="@color/gray_400" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnSearch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="52dp"
+                    android:text="GO"
+                    android:textColor="@android:color/white"
+                    android:textStyle="bold"
+                    app:cornerRadius="26dp"
+                    android:layout_marginEnd="4dp"
+                    android:backgroundTint="@color/primary" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Suggestion Chips -->
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none"
+            android:layout_marginBottom="11dp">
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/cgSuggestions"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:singleLine="true"
+                app:chipSpacingHorizontal="8dp">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipSciFi"
+                    style="@style/Widget.MaterialComponents.Chip.Action"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Best sci-fi books 🚀"
+                    app:chipBackgroundColor="?attr/colorSurface"
+                    app:chipStrokeColor="@color/primary"
+                    app:chipStrokeWidth="1dp"
+                    android:textColor="?android:attr/textColorPrimary" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipMystery"
+                    style="@style/Widget.MaterialComponents.Chip.Action"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Mystery novels 🔍"
+                    app:chipBackgroundColor="?attr/colorSurface"
+                    app:chipStrokeColor="@color/primary"
+                    app:chipStrokeWidth="1dp"
+                    android:textColor="?android:attr/textColorPrimary" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipHistory"
+                    style="@style/Widget.MaterialComponents.Chip.Action"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="World War II 🏛️"
+                    app:chipBackgroundColor="?attr/colorSurface"
+                    app:chipStrokeColor="@color/primary"
+                    app:chipStrokeWidth="1dp"
+                    android:textColor="?android:attr/textColorPrimary" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipAI"
+                    style="@style/Widget.MaterialComponents.Chip.Action"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Books on AI 🤖"
+                    app:chipBackgroundColor="?attr/colorSurface"
+                    app:chipStrokeColor="@color/primary"
+                    app:chipStrokeWidth="1dp"
+                    android:textColor="?android:attr/textColorPrimary" />
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chipSoftware"
+                    style="@style/Widget.MaterialComponents.Chip.Action"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Coding &amp; Software 💻"
+                    app:chipBackgroundColor="?attr/colorSurface"
+                    app:chipStrokeColor="@color/primary"
+                    app:chipStrokeWidth="1dp"
+                    android:textColor="?android:attr/textColorPrimary" />
+
+            </com.google.android.material.chip.ChipGroup>
+        </HorizontalScrollView>
+
+        <!-- Progress Indicator -->
+        <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/searchProgressBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:indeterminate="true"
+            android:visibility="gone"
+            android:layout_marginBottom="16dp"
+            app:indicatorColor="@color/primary" />
+
+        <!-- Search Results -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvSearchResults"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingBottom="16dp"
+            tools:listitem="@layout/item_book" />
+
+    </LinearLayout>
+</FrameLayout>

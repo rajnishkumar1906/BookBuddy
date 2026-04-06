@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string name="app_name">BookBuddy</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="librarian_dashboard">Librarian Dashboard</string>
@@ -8,7 +9,6 @@
     <string name="statistics">Statistics</string>
     <string name="bulk_upload_csv">Bulk Upload CSV</string>
     <string name="logout">Logout</string>
-
     <string name="signup_title">Create Account</string>
     <string name="signup_name_hint">Full Name</string>
     <string name="signup_email_hint">Email</string>
@@ -17,11 +17,91 @@
     <string name="signup_admin_code_hint">Librarian Secret Code</string>
     <string name="signup_button">Sign Up</string>
     <string name="signup_login_link">Already have an account? Login</string>
-
     <string name="login_email_hint">Email</string>
     <string name="login_password_hint">Password</string>
     <string name="login_button">Login</string>
     <string name="signup_prompt">Don\'t have an account? Sign Up</string>
-
+    <string name="no_account_signup">Don\'t have an account? Sign Up</string>
+    <string name="already_have_account">Already have an account? Login</string>
+    <string name="select_role">Select your role</string>
+    <string name="member">Member</string>
+    <string name="librarian">Librarian</string>
     <string name="logo">logo</string>
+    <string name="book_details">Book Details</string>
+    <string name="toggle_ai_chat">Toggle AI Chat</string>
+    <string name="ai_summary">AI Summary</string>
+    <string name="generate">Generate</string>
+    <string name="description_label">Description</string>
+    <string name="borrow_this_book">Borrow This Book</string>
+    <string name="chat_with_book_rag">Chat with Book (RAG)</string>
+    <string name="ask_about_book_hint">Ask about the book...</string>
+    <string name="ask_ai">Ask AI</string>
+    <string name="book_cover">Book Cover</string>
+    <string name="similar_books">Similar Books</string>
+    <string name="ai_semantic_search">AI Semantic Search</string>
+    <string name="search_hint">Search by meaning (e.g. books about space)</string>
+    <string name="member_dashboard">Member Dashboard</string>
+    <string name="borrowed">Borrowed</string>
+    <string name="history">History</string>
+    <string name="browse_books">Browse Books</string>
+    <string name="my_books">My Books</string>
+    <string name="ai_search">AI Search</string>
+    <string name="profile">Profile</string>
+    <string name="total_books">Total Books</string>
+    <string name="members">Members</string>
+    <string name="todo">TODO</string>
+    <string name="app_logo">App Logo</string>
+    <string name="icon_my_books">My Books Icon</string>
+    <string name="icon_ai_search">AI Search Icon</string>
+    <string name="icon_profile">Profile Icon</string>
+    <string name="icon_logout">Logout Icon</string>
+    <string name="icon_add_book">Add Book Icon</string>
+    <string name="icon_manage_books">Manage Books Icon</string>
+    <string name="icon_bulk_upload">Bulk Upload Icon</string>
+    <string name="icon_stats">Statistics Icon</string>
+    <string name="search_button">Search Button</string>
+    <string name="my_borrowed_books">My Borrowed Books</string>
+    <string name="no_borrowed_books_found">No borrowed books found</string>
+    <string name="voice_input">Voice Input</string>
+    <string name="your_reading_goal">Your Reading Goal 🎯</string>
+    <string name="_65_of_your_monthly_goal_completed">65% of your monthly goal completed!</string>
+    <string name="recently_viewed">Recently Viewed 📖</string>
+    <string name="librarian_hq">Librarian HQ 🏛️</string>
+    <string name="_0">0</string>
+    <string name="chat_with_ai_librarian">Chat with AI Librarian</string>
+    <string name="image">image</string>
+    <string name="borrow_book">Borrow Book</string>
+    <string name="ask_about_the_plot">Ask about the plot…</string>
+
+    <!-- New strings for Book Detail and RAG -->
+    <string name="story_insight">📖 Story Insight</string>
+    <string name="page_indicator_format">Page %1$d of %2$d</string>
+    <string name="back">Back</string>
+    <string name="next">Next</string>
+    <string name="ai_librarian">AI Librarian</string>
+    <string name="ask_librarian_hint">Ask Librarian...</string>
+
+    <!-- Accessibility descriptions -->
+    <string name="voice_assistant_robo">Voice Assistant Robo - Tap to speak with AI librarian</string>
+    <string name="send_message_to_ai">Send message to AI librarian</string>
+    <string name="talk_to_robo">Talk to Robo</string>
+
+    <!-- ==================== NEW STRINGS FOR QUIZ FEATURE ==================== -->
+    <string name="quiz_title">📝 Book Knowledge Quiz</string>
+    <string name="submit_quiz">Submit Quiz</string>
+    <string name="your_score">Your Score</string>
+    <string name="score_format">%1$d / %2$d</string>
+    <string name="quiz_success_message">Great job! 🎉</string>
+    <string name="quiz_try_again">Try Again</string>
+    <string name="answer_all_questions">Please answer all questions before submitting.</string>
+    <string name="button">button</string>
+
+    <!-- Google Authentication -->
+    <string name="google_sign_in">Sign in with Google</string>
+    <string name="google_sign_up">Sign up with Google</string>
+    <string name="search_icon">search\n</string>
+    <string name="join_bookbuddy">Join BookBuddy</string>
+    <string name="create_account">Create Account</string>
+    <string name="choose_your_role">Choose Your Role</string>
+
 </resources>

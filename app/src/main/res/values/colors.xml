@@ -1,10 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary">#6200EE</color>
-    <color name="secondary">#03DAC5</color>
-    <color name="background_light">#F5F5F5</color>
-    <color name="gray_600">#757575</color>
-    <color name="gray_700">#616161</color>
-    <color name="gray_800">#424242</color>
-    <color name="error_red">#FF0000</color>
+    <!-- Primary Palette (Member Side) -->
+    <color name="primary">#6366F1</color>
+    <color name="primary_light">#818CF8</color>
+    <color name="primary_dark">#4F46E5</color>
+    <color name="secondary">#A5B4FC</color>
+
+    <!-- Librarian Palette (Sky Blue Tones) -->
+    <color name="librarian_primary">#0EA5E9</color>
+    <color name="librarian_primary_light">#7DD3FC</color>
+    <color name="librarian_primary_dark">#0369A1</color>
+    <color name="librarian_secondary">#BAE6FD</color>
+    <color name="librarian_banner_start">#0284C7</color>
+    <color name="librarian_banner_end">#0EA5E9</color>
+
+    <!-- UI Backgrounds -->
+    <color name="background_light">#F8FAFC</color>
+    <color name="background_dark">#0F172A</color>
+    <color name="surface_light">#FFFFFF</color>
+    <color name="surface_dark">#1E293B</color>
+
+    <!-- Glassmorphism -->
+    <color name="glass_white">#CCFFFFFF</color>
+    <color name="glass_dark">#990F172A</color>
+
+    <!-- Text Colors -->
+    <color name="text_primary_light">#1E293B</color>
+    <color name="text_primary_dark">#F1F5F9</color>
+    <color name="text_secondary_light">#64748B</color>
+    <color name="text_secondary_dark">#94A3B8</color>
+
+    <!-- Grayscale -->
+    <color name="gray_100">#F1F5F9</color>
+    <color name="gray_200">#E2E8F0</color>
+    <color name="gray_300">#CBD5E1</color>
+    <color name="gray_400">#94A3B8</color>
+    <color name="gray_500">#64748B</color>
+    <color name="gray_600">#475569</color>
+    <color name="gray_700">#334155</color>
+    <color name="gray_800">#1E293B</color>
+    <color name="gray_900">#0F172A</color>
+
+    <!-- Functional -->
+    <color name="error_red">#EF4444</color>
+    <color name="wrong_red">#EF4444</color>
+    <color name="correct_green">#22C55E</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="primary_light_bg">#E0E7FF</color>
 </resources>
